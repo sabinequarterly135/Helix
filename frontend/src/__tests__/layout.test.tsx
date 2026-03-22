@@ -1,0 +1,71 @@
+import { describe, it, expect } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { Routes, Route } from 'react-router-dom'
+import AppShell from '../components/layout/AppShell'
+import PromptsPage from '../pages/PromptsPage'
+
+function renderWithProviders(ui: React.ReactElement, { route = '/' } = {}) {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={[route]}>
+        {ui}
+      </MemoryRouter>
+    </QueryClientProvider>
+  )
+}
+
+describe('AppShell', () => {
+  it('renders sidebar with Prompts as primary nav item', () => {
+    renderWithProviders(
+      <Routes>
+        <Route element={<AppShell />}>
+          <Route path="*" element={<div>content</div>} />
+        </Route>
+      </Routes>
+    )
+
+    expect(screen.getByText('Prompts')).toBeInTheDocument()
+  })
+
+  it('Prompts nav link points to /prompts', () => {
+    renderWithProviders(
+      <Routes>
+        <Route element={<AppShell />}>
+          <Route path="*" element={<div>content</div>} />
+        </Route>
+      </Routes>
+    )
+
+    expect(screen.getByText('Prompts').closest('a')).toHaveAttribute('href', '/prompts')
+  })
+
+  it('renders outlet for child content at /prompts', () => {
+    renderWithProviders(
+      <Routes>
+        <Route element={<AppShell />}>
+          <Route path="/prompts" element={<PromptsPage />} />
+        </Route>
+      </Routes>,
+      { route: '/prompts' }
+    )
+
+    expect(screen.getByText('Prompts', { selector: 'h1' })).toBeInTheDocument()
+  })
+
+  it('displays app name in sidebar header', () => {
+    renderWithProviders(
+      <Routes>
+        <Route element={<AppShell />}>
+          <Route path="*" element={<div>content</div>} />
+        </Route>
+      </Routes>
+    )
+
+    expect(screen.getByText('Helix')).toBeInTheDocument()
+  })
+})

@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+gene.yaml
+
+# User data
+/prompts/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# uv cache
+.uv/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Claude Code
+.claude/
+
+# Certificates / keys
+*.pem
+*.key
+*.cert
+*.p12
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,523 @@
+"""EvolutionLoop: single-island evolution orchestrator.
+
+Ties together BoltzmannSelector, RCCEngine, StructuralMutator, and
+FitnessEvaluator into a generation-by-generation loop with:
+- Per-generation cost tracking (COST-02)
+- Hard budget cap with conversation-level granularity (COST-03)
+- Early termination on perfect fitness (score == 0.0) (EVO-08)
+- Population management (fitness sorting, cap -- all candidates participate)
+- Stochastic parent count sampling (Pr_no_parents)
+- Probabilistic structural mutation
+"""
+
+from __future__ import annotations
+
+import logging
+import random
+from collections.abc import Awaitable, Callable
+from typing import Any
+
+from api.config.models import GenerationConfig
+from api.dataset.models import TestCase
+from api.evaluation.adaptive import AdaptiveSampler
+from api.evaluation.evaluator import FitnessEvaluator
+from api.evaluation.models import CaseResult
+from api.evaluation.sampling import SamplingStrategy
+from api.evolution.models import (
+    Candidate,
+    EvolutionConfig,
+    EvolutionResult,
+    GenerationRecord,
+)
+from api.evolution.mutator import StructuralMutator
+from api.evolution.rcc import RCCEngine
+from api.evolution.selector import BoltzmannSelector
+from api.exceptions import GatewayError, RetryableError
+from api.gateway.cost import CostTracker
+from api.lineage.collector import LineageCollector
+from api.lineage.models import LineageEvent
+
+logger = logging.getLogger(__name__)
+
+# Type alias for the optional async event callback.
+# When provided, the callback is invoked with (event_type, data) at
+# each instrumentation point. When None, no events are emitted.
+EventCallback = Callable[[str, dict[str, Any]], Awaitable[None]] | None
+
+
+class EvolutionLoop:
+    """Orchestrates single-island prompt evolution.
+
+    Manages the generation-by-generation loop, coordinating parent selection,
+    RCC conversations, structural mutation, fitness evaluation, population
+    management, and termination conditions.
+
+    Args:
+        config: Evolution hyperparameters (generations, budget, probabilities).
+        evaluator: FitnessEvaluator for scoring candidate prompts.
+        rcc: RCCEngine for critic-author conversation refinement.
+        mutator: StructuralMutator for section-level restructuring.
+        selector: BoltzmannSelector for parent selection.
+        cost_tracker: Global CostTracker for budget enforcement.
+        original_template: The seed Jinja2 template to evolve.
+        anchor_variables: Variables that must be preserved in all candidates.
+        cases: Test cases for fitness evaluation.
+        target_model: OpenRouter model identifier for inference.
+        generation_config: Temperature, max_tokens, etc. for inference.
+        prompt_tools: Default tool definitions for evaluation (optional).
+        purpose: Description of what the prompt is optimized for.
+    """
+
+    def __init__(
+        self,
+        config: EvolutionConfig,
+        evaluator: FitnessEvaluator,
+        rcc: RCCEngine,
+        mutator: StructuralMutator,
+        selector: BoltzmannSelector,
+        cost_tracker: CostTracker,
+        original_template: str,
+        anchor_variables: set[str],
+        cases: list[TestCase],
+        target_model: str,
+        generation_config: GenerationConfig,
+        prompt_tools: list[dict] | None = None,
+        purpose: str = "",
+        collector: LineageCollector | None = None,
+        event_callback: EventCallback = None,
+    ) -> None:
+        self._config = config
+        self._evaluator = evaluator
+        self._rcc = rcc
+        self._mutator = mutator
+        self._selector = selector
+        self._cost_tracker = cost_tracker
+        self._original_template = original_template
+        self._anchor_variables = anchor_variables
+        self._cases = cases
+        self._target_model = target_model
+        self._generation_config = generation_config
+        self._prompt_tools = prompt_tools
+        self._purpose = purpose
+        self._collector = collector
+        self._event_callback = event_callback
+        self._seed_results: list[CaseResult] | None = None
+
+        # Adaptive sampling (EVO-04/05/06): create sampler when enabled
+        self._adaptive_sampler: AdaptiveSampler | None = None
+        if config.adaptive_sampling:
+            self._adaptive_sampler = AdaptiveSampler(
+                decay_constant=config.adaptive_decay_constant,
+                min_rate=config.adaptive_min_rate,
+            )
+
+    def set_seed_results(self, results: list[CaseResult]) -> None:
+        """Inject seed evaluation results for sampling decisions.
+
+        IslandEvolver calls this after its own seed evaluation so that
+        step_generation() can apply SamplingStrategy.smart_subset().
+        """
+        self._seed_results = results
+
+    async def run(self) -> EvolutionResult:
+        """Execute the single-island evolution loop.
+
+        1. Initialize population with the original template (evaluated for baseline).
+        2. Iterate generations with budget checks, RCC conversations,
+           structural mutation, evaluation, and population management.
+        3. Terminate on perfect fitness, budget exhaustion, or generation count.
+
+        Returns:
+            EvolutionResult with best candidate, generation records,
+            total cost, and termination reason.
+        """
+        # Initialize population: evaluate the original template for baseline
+        seed_candidate = Candidate(
+            template=self._original_template,
+            generation=0,
+            parent_ids=[],
+        )
+        seed_report = await self._evaluator.evaluate(
+            template=seed_candidate.template,
+            cases=self._cases,
+            target_model=self._target_model,
+            generation_config=self._generation_config,
+            prompt_tools=self._prompt_tools,
+            purpose=self._purpose,
+        )
+        seed_candidate.fitness_score = seed_report.fitness.score
+        seed_candidate.normalized_score = seed_report.fitness.normalized_score
+        seed_candidate.rejected = seed_report.fitness.rejected
+        seed_candidate.evaluation = seed_report
+        self._seed_results = seed_report.case_results
+
+        if self._collector is not None:
+            self._collector.record(
+                LineageEvent(
+                    candidate_id=seed_candidate.id,
+                    parent_ids=[],
+                    generation=0,
+                    fitness_score=seed_candidate.fitness_score,
+                    normalized_score=seed_candidate.normalized_score,
+                    rejected=seed_candidate.rejected,
+                    mutation_type="seed",
+                    template=seed_candidate.template,
+                )
+            )
+
+        population: list[Candidate] = [seed_candidate]
+        best_candidate = seed_candidate
+        generation_records: list[GenerationRecord] = []
+        termination_reason = "generations_complete"
+
+        # Check early termination on seed (0.0 = perfect, no penalties)
+        if best_candidate.fitness_score == 0.0:
+            return EvolutionResult(
+                best_candidate=best_candidate,
+                generation_records=generation_records,
+                total_cost=self._cost_tracker.summary(),
+                termination_reason="perfect_fitness",
+                seed_evaluation=seed_report,
+            )
+
+        # Generation loop
+        for gen in range(self._config.generations):
+            # Check budget at generation boundary
+            if self._budget_exceeded():
+                termination_reason = "budget_exhausted"
+                logger.info("Budget exhausted before generation %d", gen)
+                break
+
+            population, record, step_reason = await self.step_generation(
+                population=population,
+                generation=gen,
+            )
+            generation_records.append(record)
+
+            # Track best candidate (higher = less penalized = better)
+            if population:
+                gen_best = population[0]  # Already sorted by fitness desc
+                if gen_best.fitness_score > best_candidate.fitness_score:
+                    best_candidate = gen_best
+
+            # Check termination from step_generation
+            if step_reason is not None:
+                termination_reason = step_reason
+                break
+
+        return EvolutionResult(
+            best_candidate=best_candidate,
+            generation_records=generation_records,
+            total_cost=self._cost_tracker.summary(),
+            termination_reason=termination_reason,
+            seed_evaluation=seed_report,
+        )
+
+    async def _emit(self, event_type: str, data: dict[str, Any]) -> None:
+        """Emit an event via the callback, if one is registered."""
+        if self._event_callback is not None:
+            await self._event_callback(event_type, data)
+
+    async def step_generation(
+        self,
+        population: list[Candidate],
+        generation: int,
+        island: int = 0,
+    ) -> tuple[list[Candidate], GenerationRecord, str | None]:
+        """Run one generation of evolution on the given population.
+
+        Executes conversations_per_island RCC conversations, applies
+        structural mutation probabilistically, evaluates candidates,
+        manages population, and returns the result.
+
+        This method is the building block for both single-island run()
+        and multi-island IslandEvolver, which inserts migration and
+        reset between generations.
+
+        Args:
+            population: Current population of candidates.
+            generation: Generation number (0-indexed).
+
+        Returns:
+            A tuple of (updated_population, generation_record, termination_reason)
+            where termination_reason is None if the generation completed normally,
+            "perfect_fitness" if a perfect candidate was found, or
+            "budget_exhausted" if the budget was exceeded mid-generation.
+        """
+        # Snapshot global cost before generation for per-generation delta (COST-02)
+        cost_before_gen = self._cost_tracker.summary()
+
+        new_candidates: list[Candidate] = []
+        termination_reason: str | None = None
+
+        # Determine if this is a checkpoint generation (full eval for regression detection)
+        is_checkpoint = (
+            self._adaptive_sampler is not None
+            and self._config.checkpoint_interval > 0
+            and generation > 0
+            and generation % self._config.checkpoint_interval == 0
+        )
+
+        # Conversation loop
+        for conv in range(self._config.conversations_per_island):
+            # Check budget at conversation-level granularity (COST-03)
+            if self._budget_exceeded():
+                termination_reason = "budget_exhausted"
+                logger.info(
+                    "Budget exhausted at generation %d, conversation %d",
+                    generation,
+                    conv,
+                )
+                break
+
+            # Sample parent count with Pr_no_parents probability
+            n_parents_this = self._sample_parent_count()
+
+            # Select parents
+            parents = self._selector.select(population, n_parents_this, self._config.temperature)
+
+            # Run RCC conversation (with error resilience for transient API failures)
+            try:
+                candidate = await self._rcc.run_conversation(
+                    parents=parents,
+                    original_template=self._original_template,
+                    anchor_variables=self._anchor_variables,
+                    purpose=self._purpose,
+                    n_seq=self._config.n_seq,
+                    generation=generation,
+                )
+            except RetryableError as exc:
+                logger.warning(
+                    "RCC conversation %d failed (gen %d, island %d): %s — skipping (transient)",
+                    conv,
+                    generation,
+                    island,
+                    exc,
+                )
+                continue
+            except GatewayError as exc:
+                # Non-retryable errors (400 Bad Request) — log and re-raise
+                # to stop the evolution since every conversation will fail the same way
+                logger.error(
+                    "RCC conversation %d failed (gen %d, island %d): %s — aborting (non-retryable)",
+                    conv,
+                    generation,
+                    island,
+                    exc,
+                )
+                raise
+
+            # Apply structural mutation probabilistically
+            applied_structural = False
+            if random.random() < self._config.structural_mutation_probability:
+                try:
+                    candidate = await self._mutator.mutate(
+                        candidate,
+                        self._original_template,
+                        self._anchor_variables,
+                    )
+                    applied_structural = True
+                except RetryableError as exc:
+                    logger.warning(
+                        "Structural mutation failed (gen %d, island %d): %s — using RCC result",
+                        generation,
+                        island,
+                        exc,
+                    )
+                except GatewayError:
+                    raise
+
+            # Apply subset sampling if configured (SAMP-02 / EVO-06)
+            if is_checkpoint:
+                # Checkpoint: evaluate ALL cases to catch regressions
+                eval_cases = SamplingStrategy.full(self._cases)
+            elif (
+                self._config.sample_size is not None or self._config.sample_ratio is not None
+            ) and self._seed_results is not None:
+                # Normal generation: use smart_subset with optional adaptive weights
+                adaptive_weights = (
+                    self._adaptive_sampler.get_weights(self._cases)
+                    if self._adaptive_sampler
+                    else None
+                )
+                eval_cases = SamplingStrategy.smart_subset(
+                    cases=self._cases,
+                    previous_results=self._seed_results,
+                    sample_size=self._config.sample_size,
+                    sample_ratio=self._config.sample_ratio,
+                    adaptive_weights=adaptive_weights,
+                )
+            else:
+                eval_cases = self._cases
+
+            # Evaluate candidate
+            report = await self._evaluator.evaluate(
+                template=candidate.template,
+                cases=eval_cases,
+                target_model=self._target_model,
+                generation_config=self._generation_config,
+                prompt_tools=self._prompt_tools,
+                purpose=self._purpose,
+            )
+            candidate.fitness_score = report.fitness.score
+            candidate.normalized_score = report.fitness.normalized_score
+            candidate.rejected = report.fitness.rejected
+            candidate.evaluation = report
+
+            # Determine mutation type (used for both lineage and event callback)
+            if applied_structural:
+                mut_type = "structural"
+            elif not candidate.parent_ids:
+                mut_type = "fresh"
+            else:
+                mut_type = "rcc"
+
+            # Emit candidate_evaluated event
+            await self._emit(
+                "candidate_evaluated",
+                {
+                    "generation": generation,
+                    "candidate_id": candidate.id,
+                    "fitness_score": candidate.fitness_score,
+                    "normalized_score": candidate.normalized_score,
+                    "rejected": candidate.rejected,
+                    "mutation_type": mut_type,
+                    "island": island,
+                },
+            )
+
+            # Record lineage event for this candidate
+            if self._collector is not None:
+                self._collector.record(
+                    LineageEvent(
+                        candidate_id=candidate.id,
+                        parent_ids=candidate.parent_ids,
+                        generation=generation,
+                        island=island,
+                        fitness_score=candidate.fitness_score,
+                        normalized_score=candidate.normalized_score,
+                        rejected=candidate.rejected,
+                        mutation_type=mut_type,  # reuse computed value above
+                        template=candidate.template,
+                    )
+                )
+
+            # Perfect fitness early termination (EVO-08): 0.0 = no penalties
+            if candidate.fitness_score == 0.0:
+                new_candidates.append(candidate)
+                termination_reason = "perfect_fitness"
+                logger.info(
+                    "Perfect fitness found at generation %d, conversation %d",
+                    generation,
+                    conv,
+                )
+                break
+
+            new_candidates.append(candidate)
+
+        # Warn if all conversations failed (likely a systematic error, not transient)
+        if len(new_candidates) == 0 and self._config.conversations_per_island > 0:
+            logger.warning(
+                "All %d conversations failed for gen %d island %d — no new candidates produced",
+                self._config.conversations_per_island,
+                generation,
+                island,
+            )
+
+        # Update adaptive sampler with best candidate's results (EVO-04)
+        if self._adaptive_sampler and new_candidates:
+            best_new = max(new_candidates, key=lambda c: c.fitness_score)
+            if best_new.evaluation:
+                self._adaptive_sampler.update(best_new.evaluation.case_results)
+                # On checkpoint: reset streaks for any case that failed (EVO-05)
+                if is_checkpoint:
+                    for r in best_new.evaluation.case_results:
+                        if not r.passed:
+                            self._adaptive_sampler.reset_case(r.case_id)
+
+        # Population management
+        combined = population + new_candidates
+        population = self._select_survivors(combined)
+
+        # Mark non-survivors in lineage
+        if self._collector is not None:
+            survivor_ids = {c.id for c in population}
+            for c in new_candidates:
+                if c.id not in survivor_ids:
+                    # Record updated event for non-survivor
+                    self._collector.record(
+                        LineageEvent(
+                            candidate_id=c.id,
+                            parent_ids=c.parent_ids,
+                            generation=generation,
+                            island=island,
+                            fitness_score=c.fitness_score,
+                            normalized_score=c.normalized_score,
+                            rejected=c.rejected,
+                            mutation_type="rcc",
+                            survived=False,
+                            template=c.template,
+                        )
+                    )
+
+        # Compute per-generation cost delta (COST-02)
+        cost_after_gen = self._cost_tracker.summary()
+        gen_cost_summary = {
+            "total_calls": cost_after_gen["total_calls"] - cost_before_gen["total_calls"],
+            "total_input_tokens": cost_after_gen["total_input_tokens"]
+            - cost_before_gen["total_input_tokens"],
+            "total_output_tokens": cost_after_gen["total_output_tokens"]
+            - cost_before_gen["total_output_tokens"],
+            "total_cost_usd": cost_after_gen["total_cost_usd"] - cost_before_gen["total_cost_usd"],
+        }
+
+        # Record generation metrics (all candidates participate)
+        all_fitnesses = [c.fitness_score for c in population] if population else [0.0]
+        all_normalized = [c.normalized_score for c in population] if population else [0.0]
+        record = GenerationRecord(
+            generation=generation,
+            best_fitness=max(all_fitnesses),
+            avg_fitness=sum(all_fitnesses) / len(all_fitnesses),
+            best_normalized=max(all_normalized),
+            avg_normalized=sum(all_normalized) / len(all_normalized),
+            cost_summary=gen_cost_summary,
+            candidates_evaluated=len(new_candidates),
+        )
+
+        return population, record, termination_reason
+
+    def _budget_exceeded(self) -> bool:
+        """Check if the cost tracker total exceeds the configured budget cap.
+
+        Returns False if no budget cap is configured.
+        """
+        if self._config.budget_cap_usd is None:
+            return False
+        return self._cost_tracker.summary()["total_cost_usd"] >= self._config.budget_cap_usd
+
+    def _sample_parent_count(self) -> int:
+        """Sample parent count with Pr_no_parents probability of zero.
+
+        With probability pr_no_parents, returns 0 (fresh generation).
+        Otherwise, returns random.randint(1, config.n_parents).
+        """
+        if random.random() < self._config.pr_no_parents:
+            return 0
+        return random.randint(1, self._config.n_parents)
+
+    def _select_survivors(self, population: list[Candidate]) -> list[Candidate]:
+        """Sort all candidates by fitness descending, cap at population_cap.
+
+        All candidates participate -- heavily penalized ones just rank lower.
+
+        Args:
+            population: Current population including new candidates.
+
+        Returns:
+            Sorted and capped population, by fitness descending.
+        """
+        # Sort by fitness descending (less negative = better)
+        population.sort(key=lambda c: c.fitness_score, reverse=True)
+
+        # Cap at population_cap
+        return population[: self._config.population_cap]

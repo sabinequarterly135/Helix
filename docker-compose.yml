@@ -1,0 +1,49 @@
+# Helix - Production Docker Compose
+# Usage: docker compose up --build
+# With PostgreSQL: docker compose --profile postgres up --build
+
+services:
+  backend:
+    build: .
+    env_file: .env
+    environment:
+      GENE_DATABASE_URL: "sqlite+aiosqlite:////app/data/helix.db"
+      CORS_ORIGINS: "*"
+    volumes:
+      - db_data:/app/data
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    profiles:
+      - postgres
+    environment:
+      POSTGRES_DB: helix
+      POSTGRES_USER: helix
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-helix_dev}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U helix -d helix"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  db_data:
+  pgdata:

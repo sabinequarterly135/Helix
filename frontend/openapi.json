@@ -1,0 +1,5698 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Helix API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/": {
+      "get": {
+        "tags": [
+          "prompts"
+        ],
+        "summary": "List Prompts",
+        "description": "List all registered prompts.",
+        "operationId": "list_prompts_api_prompts__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PromptSummary"
+                  },
+                  "type": "array",
+                  "title": "Response List Prompts Api Prompts  Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "prompts"
+        ],
+        "summary": "Create Prompt",
+        "description": "Register a new prompt.",
+        "operationId": "create_prompt_api_prompts__post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePromptRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromptSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/config": {
+      "get": {
+        "tags": [
+          "prompts"
+        ],
+        "summary": "Get Prompt Config",
+        "description": "Return prompt config with provenance info.\n\nReads PromptConfig from DB. Returns both the effective (merged) config\nper role and the raw overrides dict, so the UI can show Global/Override badges.",
+        "operationId": "get_prompt_config_api_prompts__prompt_id__config_get",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromptConfigResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "prompts"
+        ],
+        "summary": "Update Prompt Config",
+        "description": "Update per-prompt config in DB PromptConfig table.\n\nUpserts the PromptConfig row. Stores role-prefixed fields in the extra\nJSON column. Does NOT write config.json.",
+        "operationId": "update_prompt_config_api_prompts__prompt_id__config_put",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PromptConfigSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromptConfigResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}": {
+      "get": {
+        "tags": [
+          "prompts"
+        ],
+        "summary": "Get Prompt",
+        "description": "Get a prompt's full detail including template text from DB.",
+        "operationId": "get_prompt_api_prompts__prompt_id__get",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromptDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/template": {
+      "put": {
+        "tags": [
+          "prompts"
+        ],
+        "summary": "Update Template",
+        "description": "Update a prompt's template text.",
+        "operationId": "update_template_api_prompts__prompt_id__template_put",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTemplateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromptSummary"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/versions": {
+      "get": {
+        "tags": [
+          "prompts"
+        ],
+        "summary": "List Versions",
+        "description": "List all versions for a prompt, ordered by version number.",
+        "operationId": "list_versions_api_prompts__prompt_id__versions_get",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PromptVersionResponse"
+                  },
+                  "title": "Response List Versions Api Prompts  Prompt Id  Versions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/versions/{version}": {
+      "get": {
+        "tags": [
+          "prompts"
+        ],
+        "summary": "Get Version",
+        "description": "Get a specific version of a prompt.",
+        "operationId": "get_version_api_prompts__prompt_id__versions__version__get",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Version"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromptVersionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/versions/{version}/activate": {
+      "put": {
+        "tags": [
+          "prompts"
+        ],
+        "summary": "Activate Version",
+        "description": "Activate a specific version for a prompt.",
+        "operationId": "activate_version_api_prompts__prompt_id__versions__version__activate_put",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Version"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromptVersionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/versions/accept": {
+      "post": {
+        "tags": [
+          "prompts"
+        ],
+        "summary": "Accept Version",
+        "description": "Accept an evolved template as a new version.\n\nCreates a new version from the provided template and sets it as active.\nUsed after evolution runs to accept the best evolved template.",
+        "operationId": "accept_version_api_prompts__prompt_id__versions_accept_post",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AcceptVersionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PromptVersionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/dataset": {
+      "get": {
+        "tags": [
+          "datasets"
+        ],
+        "summary": "List Cases",
+        "description": "List all test cases for a prompt.",
+        "operationId": "list_cases_api_prompts__prompt_id__dataset_get",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TestCaseResponse"
+                  },
+                  "title": "Response List Cases Api Prompts  Prompt Id  Dataset Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "datasets"
+        ],
+        "summary": "Add Case",
+        "description": "Add a new test case to a prompt's dataset.",
+        "operationId": "add_case_api_prompts__prompt_id__dataset_post",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestCaseCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestCaseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/dataset/{case_id}": {
+      "get": {
+        "tags": [
+          "datasets"
+        ],
+        "summary": "Get Case",
+        "description": "Get a single test case by ID.",
+        "operationId": "get_case_api_prompts__prompt_id__dataset__case_id__get",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          },
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestCaseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "datasets"
+        ],
+        "summary": "Update Case",
+        "description": "Update an existing test case (partial update).",
+        "operationId": "update_case_api_prompts__prompt_id__dataset__case_id__put",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          },
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestCaseUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestCaseResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "datasets"
+        ],
+        "summary": "Delete Case",
+        "description": "Delete a test case.",
+        "operationId": "delete_case_api_prompts__prompt_id__dataset__case_id__delete",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          },
+          {
+            "name": "case_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Case Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/dataset/import": {
+      "post": {
+        "tags": [
+          "datasets"
+        ],
+        "summary": "Import Cases",
+        "description": "Import test cases from an uploaded JSON or YAML file.",
+        "operationId": "import_cases_api_prompts__prompt_id__dataset_import_post",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_import_cases_api_prompts__prompt_id__dataset_import_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TestCaseResponse"
+                  },
+                  "title": "Response Import Cases Api Prompts  Prompt Id  Dataset Import Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evolution/start": {
+      "post": {
+        "tags": [
+          "evolution"
+        ],
+        "summary": "Start Evolution",
+        "description": "Start an evolution run as a background task.\n\nLoads the prompt and test cases, builds an EvolutionConfig,\nand hands the coroutine to the RunManager.",
+        "operationId": "start_evolution_api_evolution_start_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvolutionRunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvolutionRunStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evolution/active": {
+      "get": {
+        "tags": [
+          "evolution"
+        ],
+        "summary": "List Active Runs",
+        "description": "List all currently active (in-memory) evolution runs.",
+        "operationId": "list_active_runs_api_evolution_active_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/EvolutionRunStatus"
+                  },
+                  "type": "array",
+                  "title": "Response List Active Runs Api Evolution Active Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evolution/{run_id}/stop": {
+      "post": {
+        "tags": [
+          "evolution"
+        ],
+        "summary": "Stop Evolution",
+        "description": "Cancel a running evolution task.",
+        "operationId": "stop_evolution_api_evolution__run_id__stop_post",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/evolution/{run_id}/status": {
+      "get": {
+        "tags": [
+          "evolution"
+        ],
+        "summary": "Get Run Status",
+        "description": "Get the current status of an evolution run.",
+        "operationId": "get_run_status_api_evolution__run_id__status_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvolutionRunStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/history/{prompt_id}": {
+      "get": {
+        "tags": [
+          "history"
+        ],
+        "summary": "Get History",
+        "description": "List evolution runs for a prompt, ordered by most recent first.",
+        "operationId": "get_history_api_history__prompt_id__get",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EvolutionRunHistory"
+                  },
+                  "title": "Response Get History Api History  Prompt Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/history/run/by-uuid/{run_uuid}/results": {
+      "get": {
+        "tags": [
+          "history"
+        ],
+        "summary": "Get Run Results By Uuid",
+        "description": "Get full results for a completed evolution run by its UUID.\n\nUsed by the dashboard for live-to-completed transitions where\nthe frontend only has the RunManager UUID, not the DB integer ID.",
+        "operationId": "get_run_results_by_uuid_api_history_run_by_uuid__run_uuid__results_get",
+        "parameters": [
+          {
+            "name": "run_uuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Run Uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunResultsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/history/run/{run_id}": {
+      "get": {
+        "tags": [
+          "history"
+        ],
+        "summary": "Get Run Detail",
+        "description": "Get a single evolution run by its database ID.",
+        "operationId": "get_run_detail_api_history_run__run_id__get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvolutionRunHistory"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/history/run/{run_id}/results": {
+      "get": {
+        "tags": [
+          "history"
+        ],
+        "summary": "Get Run Results",
+        "description": "Get full results for a completed evolution run.\n\nReturns lineage events, case results, seed case results,\nbest candidate ID, and best template for visualization.",
+        "operationId": "get_run_results_api_history_run__run_id__results_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunResultsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/models/": {
+      "get": {
+        "tags": [
+          "models"
+        ],
+        "summary": "List Models",
+        "description": "List available models from the specified provider.\n\nReturns cached results if a successful fetch occurred within the\nlast 5 minutes.  Missing API keys return 503; unknown providers\nreturn 400; upstream failures return 502.",
+        "operationId": "list_models_api_models__get",
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Provider name: 'openrouter', 'gemini', or 'openai'",
+              "title": "Provider"
+            },
+            "description": "Provider name: 'openrouter', 'gemini', or 'openai'"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ModelInfo"
+                  },
+                  "title": "Response List Models Api Models  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/wizard/generate": {
+      "post": {
+        "tags": [
+          "wizard"
+        ],
+        "summary": "Generate Template",
+        "description": "Generate a prompt template from wizard answers using the meta model.",
+        "operationId": "generate_template_api_wizard_generate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WizardGenerateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WizardGenerateResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/synthesize": {
+      "post": {
+        "tags": [
+          "synthesis"
+        ],
+        "summary": "Start Synthesis",
+        "description": "Start a synthesis run as a background task.\n\nLoads the prompt's personas, creates a SynthesisEngine, and launches\nconversation simulation as a background asyncio task. Progress events\nare published to the EventBus for WebSocket streaming.\n\nArgs:\n    prompt_id: Prompt to synthesize test cases for.\n    body: Synthesis configuration (persona_ids, num_conversations, max_turns).\n    request: FastAPI request for accessing app state.\n    config: Application configuration.\n    registry: Prompt registry for loading prompt data.\n    dataset_service: Dataset service for persisting test cases.\n\nReturns:\n    SynthesizeResponse with run_id and initial status.\n\nRaises:\n    HTTPException: 400 if no personas defined for the prompt.",
+        "operationId": "start_synthesis_api_prompts__prompt_id__synthesize_post",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SynthesizeRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SynthesizeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/review": {
+      "post": {
+        "tags": [
+          "synthesis"
+        ],
+        "summary": "Review Conversations",
+        "description": "Submit approve/reject decisions for synthesized conversations.\n\nRetrieves the buffered synthesis result by run_id, persists approved\nconversations as test cases via DatasetService, and discards rejected ones.\nCleans up the in-memory buffer after processing.\n\nArgs:\n    prompt_id: Prompt to persist approved conversations to.\n    body: Review decisions with run_id and per-conversation actions.\n    request: FastAPI request for accessing app state.\n    dataset_service: Dataset service for persisting test cases.\n\nReturns:\n    ReviewResponse with approved/rejected counts and persisted case IDs.\n\nRaises:\n    HTTPException: 404 if the review session is not found or expired.",
+        "operationId": "review_conversations_api_prompts__prompt_id__review_post",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/personas": {
+      "get": {
+        "tags": [
+          "personas"
+        ],
+        "summary": "List Personas",
+        "description": "List all personas for a prompt. Returns defaults if no DB rows exist.",
+        "operationId": "list_personas_api_prompts__prompt_id__personas_get",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PersonaProfileResponse"
+                  },
+                  "title": "Response List Personas Api Prompts  Prompt Id  Personas Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "personas"
+        ],
+        "summary": "Create Persona",
+        "description": "Create a new persona for a prompt.",
+        "operationId": "create_persona_api_prompts__prompt_id__personas_post",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePersonaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonaProfileResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/personas/{persona_id}": {
+      "put": {
+        "tags": [
+          "personas"
+        ],
+        "summary": "Update Persona",
+        "description": "Update an existing persona's fields (partial update).",
+        "operationId": "update_persona_api_prompts__prompt_id__personas__persona_id__put",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          },
+          {
+            "name": "persona_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Persona Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePersonaRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonaProfileResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "personas"
+        ],
+        "summary": "Delete Persona",
+        "description": "Delete a persona by ID.",
+        "operationId": "delete_persona_api_prompts__prompt_id__personas__persona_id__delete",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          },
+          {
+            "name": "persona_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Persona Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/personas/export": {
+      "get": {
+        "tags": [
+          "personas"
+        ],
+        "summary": "Export Personas",
+        "description": "Export all personas as a JSON array.",
+        "operationId": "export_personas_api_prompts__prompt_id__personas_export_get",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PersonaProfileResponse"
+                  },
+                  "title": "Response Export Personas Api Prompts  Prompt Id  Personas Export Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/personas/import": {
+      "post": {
+        "tags": [
+          "personas"
+        ],
+        "summary": "Import Personas",
+        "description": "Import personas from a JSON array, skipping existing IDs.",
+        "operationId": "import_personas_api_prompts__prompt_id__personas_import_post",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/CreatePersonaRequest"
+                },
+                "title": "Body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportPersonasResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/settings/": {
+      "get": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Get Settings",
+        "description": "Return current configuration with masked API keys.\n\nReads DB Setting rows (including encrypted API keys) and merges onto\nGeneConfig defaults. Env var keys take priority over DB-stored keys.",
+        "operationId": "get_settings_api_settings__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Update Settings",
+        "description": "Update configuration in database and return new settings.\n\nOnly provided (non-None) fields are updated; others are preserved.\nAPI key fields are encrypted and stored in the \"api_keys\" Setting category.\nNon-key fields go to \"global_config\" as before.\nThe config cache is cleared so the next request picks up new values.",
+        "operationId": "update_settings_api_settings__put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SettingsUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/settings/defaults": {
+      "get": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Get Defaults",
+        "description": "Return GeneConfig default values (for 'Reset to Defaults' feature).",
+        "operationId": "get_defaults_api_settings_defaults_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingsResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/settings/test-connection": {
+      "post": {
+        "tags": [
+          "settings"
+        ],
+        "summary": "Test Connection",
+        "description": "Validate an API key by making a lightweight request to the provider.\n\nAttempts to list models from the provider. Returns success/failure.",
+        "operationId": "test_connection_api_settings_test_connection_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TestConnectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TestConnectionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/presets": {
+      "get": {
+        "tags": [
+          "presets"
+        ],
+        "summary": "List Presets",
+        "description": "List all presets, optionally filtered by type.",
+        "operationId": "list_presets_api_presets_get",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PresetResponse"
+                  },
+                  "title": "Response List Presets Api Presets Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "presets"
+        ],
+        "summary": "Create Preset",
+        "description": "Create a new preset.",
+        "operationId": "create_preset_api_presets_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePresetRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PresetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/presets/{preset_id}": {
+      "get": {
+        "tags": [
+          "presets"
+        ],
+        "summary": "Get Preset",
+        "description": "Get a single preset by ID.",
+        "operationId": "get_preset_api_presets__preset_id__get",
+        "parameters": [
+          {
+            "name": "preset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Preset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PresetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "presets"
+        ],
+        "summary": "Update Preset",
+        "description": "Update an existing preset (partial update).",
+        "operationId": "update_preset_api_presets__preset_id__put",
+        "parameters": [
+          {
+            "name": "preset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Preset Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePresetRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PresetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "presets"
+        ],
+        "summary": "Delete Preset",
+        "description": "Delete a preset.",
+        "operationId": "delete_preset_api_presets__preset_id__delete",
+        "parameters": [
+          {
+            "name": "preset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Preset Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/presets/{preset_id}/default": {
+      "put": {
+        "tags": [
+          "presets"
+        ],
+        "summary": "Set Default",
+        "description": "Mark a preset as default, clearing other defaults of the same type.",
+        "operationId": "set_default_api_presets__preset_id__default_put",
+        "parameters": [
+          {
+            "name": "preset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Preset Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PresetResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/variables": {
+      "get": {
+        "tags": [
+          "playground"
+        ],
+        "summary": "Get Variables",
+        "description": "Return all saved variable values for a prompt from DB.",
+        "operationId": "get_variables_api_prompts__prompt_id__variables_get",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlaygroundVariablesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "playground"
+        ],
+        "summary": "Save Variables",
+        "description": "Save variable values to DB (upsert per variable_name).\n\nFor each variable in the request, check if (prompt_id, variable_name)\nexists; if yes update value, if no insert new row.",
+        "operationId": "save_variables_api_prompts__prompt_id__variables_put",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlaygroundVariablesUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlaygroundVariablesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/playground-config": {
+      "get": {
+        "tags": [
+          "playground"
+        ],
+        "summary": "Get Playground Config",
+        "description": "Return playground config (turn_limit, budget) for a prompt.",
+        "operationId": "get_playground_config_api_prompts__prompt_id__playground_config_get",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlaygroundConfigResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "playground"
+        ],
+        "summary": "Update Playground Config",
+        "description": "Update playground config (turn_limit, budget) for a prompt.",
+        "operationId": "update_playground_config_api_prompts__prompt_id__playground_config_put",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PlaygroundConfigUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlaygroundConfigResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/chat": {
+      "post": {
+        "tags": [
+          "playground"
+        ],
+        "summary": "Chat",
+        "description": "Stream an LLM chat response via Server-Sent Events.\n\nLoads the prompt template from DB, renders it with provided variables as the\nsystem message, appends the conversation history, and streams the\ntarget model's response token-by-token.\n\nSSE events emitted:\n- token: {\"content\": \"...\"} -- each streamed token\n- done: {\"input_tokens\": N, \"output_tokens\": N, \"cost_usd\": F, \"model\": \"...\", \"finish_reason\": \"...\"} -- stream complete\n- error: {\"message\": \"...\"} -- on failure\n- limit_reached: {\"reason\": \"turn_limit\", \"turns_used\": N, \"turn_limit\": N} -- turn limit exceeded",
+        "operationId": "chat_api_prompts__prompt_id__chat_post",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/format-guides": {
+      "get": {
+        "tags": [
+          "format-guides"
+        ],
+        "summary": "List Format Guides",
+        "description": "List all format guides for a prompt.",
+        "operationId": "list_format_guides_api_prompts__prompt_id__format_guides_get",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FormatGuideResponse"
+                  },
+                  "title": "Response List Format Guides Api Prompts  Prompt Id  Format Guides Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/format-guides/{tool_name}": {
+      "put": {
+        "tags": [
+          "format-guides"
+        ],
+        "summary": "Upsert Format Guide",
+        "description": "Create or update a format guide for a specific tool.\n\nValidates that at least 1 example is provided and each example\nis valid JSON. Upserts: updates if exists, creates if not.",
+        "operationId": "upsert_format_guide_api_prompts__prompt_id__format_guides__tool_name__put",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          },
+          {
+            "name": "tool_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Tool Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "title": "Examples"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FormatGuideResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "format-guides"
+        ],
+        "summary": "Delete Format Guide",
+        "description": "Delete a format guide for a specific tool.",
+        "operationId": "delete_format_guide_api_prompts__prompt_id__format_guides__tool_name__delete",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          },
+          {
+            "name": "tool_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Tool Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Delete Format Guide Api Prompts  Prompt Id  Format Guides  Tool Name  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/prompts/{prompt_id}/format-guides/generate-sample": {
+      "post": {
+        "tags": [
+          "format-guides"
+        ],
+        "summary": "Generate Sample",
+        "description": "Generate a sample mock response using the LLM tool mocker.\n\nLoads the format guide for the specified tool from the database,\ncreates an LLMMocker with the configured provider/model, and\ngenerates a preview response.",
+        "operationId": "generate_sample_api_prompts__prompt_id__format_guides_generate_sample_post",
+        "parameters": [
+          {
+            "name": "prompt_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Prompt Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateSampleRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateSampleResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AcceptVersionRequest": {
+        "properties": {
+          "template": {
+            "type": "string",
+            "title": "Template"
+          }
+        },
+        "type": "object",
+        "required": [
+          "template"
+        ],
+        "title": "AcceptVersionRequest",
+        "description": "Request body for accepting a new version from evolution results."
+      },
+      "Body_import_cases_api_prompts__prompt_id__dataset_import_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_import_cases_api_prompts__prompt_id__dataset_import_post"
+      },
+      "CaseResultResponse": {
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "title": "Case Id"
+          },
+          "tier": {
+            "type": "string",
+            "title": "Tier",
+            "default": "normal"
+          },
+          "score": {
+            "type": "number",
+            "title": "Score"
+          },
+          "passed": {
+            "type": "boolean",
+            "title": "Passed",
+            "default": false
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "default": ""
+          },
+          "expected": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected"
+          },
+          "actual_content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual Content"
+          },
+          "actual_tool_calls": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual Tool Calls"
+          },
+          "criteria_results": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Criteria Results"
+          }
+        },
+        "type": "object",
+        "required": [
+          "case_id",
+          "score"
+        ],
+        "title": "CaseResultResponse",
+        "description": "Evaluation result for a single test case."
+      },
+      "ChatRequest": {
+        "properties": {
+          "messages": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Messages"
+          },
+          "variables": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Variables",
+            "default": {}
+          },
+          "turn_limit": {
+            "type": "integer",
+            "title": "Turn Limit",
+            "default": 20
+          },
+          "cost_budget": {
+            "type": "number",
+            "title": "Cost Budget",
+            "default": 0.5
+          }
+        },
+        "type": "object",
+        "required": [
+          "messages"
+        ],
+        "title": "ChatRequest",
+        "description": "Request body for interactive chat playground."
+      },
+      "CreatePersonaRequest": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "traits": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Traits"
+          },
+          "communication_style": {
+            "type": "string",
+            "title": "Communication Style"
+          },
+          "goal": {
+            "type": "string",
+            "title": "Goal"
+          },
+          "edge_cases": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edge Cases"
+          },
+          "behavior_criteria": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Behavior Criteria"
+          },
+          "language": {
+            "type": "string",
+            "title": "Language",
+            "default": "en"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel",
+            "default": "text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "traits",
+          "communication_style",
+          "goal"
+        ],
+        "title": "CreatePersonaRequest",
+        "description": "Request body for creating a new persona."
+      },
+      "CreatePresetRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data"
+          },
+          "is_default": {
+            "type": "boolean",
+            "title": "Is Default",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "type",
+          "data"
+        ],
+        "title": "CreatePresetRequest",
+        "description": "Request body for creating a new preset."
+      },
+      "CreatePromptRequest": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "template": {
+            "type": "string",
+            "title": "Template"
+          },
+          "variables": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variables"
+          },
+          "tools": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tools"
+          },
+          "tool_schemas": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Schemas"
+          },
+          "mocks": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mocks"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "purpose",
+          "template"
+        ],
+        "title": "CreatePromptRequest",
+        "description": "Request body for registering a new prompt."
+      },
+      "EvolutionRunHistory": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "prompt_id": {
+            "type": "string",
+            "title": "Prompt Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "best_fitness_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Fitness Score"
+          },
+          "total_cost_usd": {
+            "type": "number",
+            "title": "Total Cost Usd"
+          },
+          "generations_completed": {
+            "type": "integer",
+            "title": "Generations Completed"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "meta_model": {
+            "type": "string",
+            "title": "Meta Model"
+          },
+          "target_model": {
+            "type": "string",
+            "title": "Target Model"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "prompt_id",
+          "status",
+          "best_fitness_score",
+          "total_cost_usd",
+          "generations_completed",
+          "created_at",
+          "meta_model",
+          "target_model"
+        ],
+        "title": "EvolutionRunHistory",
+        "description": "Historical record of a completed evolution run."
+      },
+      "EvolutionRunRequest": {
+        "properties": {
+          "prompt_id": {
+            "type": "string",
+            "title": "Prompt Id"
+          },
+          "generations": {
+            "type": "integer",
+            "title": "Generations",
+            "default": 10
+          },
+          "islands": {
+            "type": "integer",
+            "title": "Islands",
+            "default": 4
+          },
+          "conversations_per_island": {
+            "type": "integer",
+            "title": "Conversations Per Island",
+            "default": 5
+          },
+          "budget_cap_usd": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Budget Cap Usd"
+          },
+          "sample_size": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample Size"
+          },
+          "sample_ratio": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample Ratio"
+          },
+          "pr_no_parents": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pr No Parents"
+          },
+          "temperature": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature"
+          },
+          "structural_mutation_probability": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Structural Mutation Probability"
+          },
+          "n_seq": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N Seq"
+          },
+          "population_cap": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Population Cap"
+          },
+          "n_emigrate": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N Emigrate"
+          },
+          "reset_interval": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reset Interval"
+          },
+          "n_reset": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N Reset"
+          },
+          "n_top": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N Top"
+          },
+          "adaptive_sampling": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Adaptive Sampling"
+          },
+          "adaptive_decay_constant": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Adaptive Decay Constant"
+          },
+          "adaptive_min_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Adaptive Min Rate"
+          },
+          "checkpoint_interval": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Checkpoint Interval"
+          },
+          "inference_temperature": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inference Temperature"
+          },
+          "top_p": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top P"
+          },
+          "top_k": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top K"
+          },
+          "max_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Tokens"
+          },
+          "frequency_penalty": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frequency Penalty"
+          },
+          "presence_penalty": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Presence Penalty"
+          },
+          "meta_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meta Model"
+          },
+          "meta_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meta Provider"
+          },
+          "target_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Model"
+          },
+          "target_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Provider"
+          },
+          "judge_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judge Model"
+          },
+          "judge_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judge Provider"
+          },
+          "meta_thinking_budget": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meta Thinking Budget"
+          },
+          "meta_thinking_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meta Thinking Level"
+          },
+          "target_thinking_budget": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Thinking Budget"
+          },
+          "target_thinking_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Thinking Level"
+          },
+          "judge_thinking_budget": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judge Thinking Budget"
+          },
+          "judge_thinking_level": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judge Thinking Level"
+          }
+        },
+        "type": "object",
+        "required": [
+          "prompt_id"
+        ],
+        "title": "EvolutionRunRequest",
+        "description": "Request body for starting an evolution run."
+      },
+      "EvolutionRunStatus": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "prompt_id": {
+            "type": "string",
+            "title": "Prompt Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "started_at": {
+            "type": "string",
+            "title": "Started At"
+          },
+          "meta_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meta Model"
+          },
+          "meta_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meta Provider"
+          },
+          "target_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Model"
+          },
+          "target_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Provider"
+          },
+          "judge_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judge Model"
+          },
+          "judge_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judge Provider"
+          },
+          "hyperparameters": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hyperparameters"
+          }
+        },
+        "type": "object",
+        "required": [
+          "run_id",
+          "prompt_id",
+          "status",
+          "started_at"
+        ],
+        "title": "EvolutionRunStatus",
+        "description": "Status of a running evolution."
+      },
+      "FormatGuideResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "prompt_id": {
+            "type": "string",
+            "title": "Prompt Id"
+          },
+          "tool_name": {
+            "type": "string",
+            "title": "Tool Name"
+          },
+          "examples": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Examples"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "prompt_id",
+          "tool_name",
+          "examples"
+        ],
+        "title": "FormatGuideResponse",
+        "description": "Response representation of a tool format guide."
+      },
+      "GenerateSampleRequest": {
+        "properties": {
+          "tool_name": {
+            "type": "string",
+            "title": "Tool Name"
+          },
+          "scenario_type": {
+            "type": "string",
+            "title": "Scenario Type",
+            "default": "success"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tool_name"
+        ],
+        "title": "GenerateSampleRequest",
+        "description": "Request body for generating a sample mock response."
+      },
+      "GenerateSampleResponse": {
+        "properties": {
+          "sample": {
+            "type": "string",
+            "title": "Sample"
+          },
+          "scenario_type": {
+            "type": "string",
+            "title": "Scenario Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "sample",
+          "scenario_type"
+        ],
+        "title": "GenerateSampleResponse",
+        "description": "Response from sample generation endpoint."
+      },
+      "GenerationConfig": {
+        "properties": {
+          "temperature": {
+            "type": "number",
+            "title": "Temperature",
+            "default": 0.7
+          },
+          "max_tokens": {
+            "type": "integer",
+            "title": "Max Tokens",
+            "default": 4096
+          },
+          "top_p": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top P"
+          },
+          "top_k": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top K"
+          },
+          "frequency_penalty": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frequency Penalty"
+          },
+          "presence_penalty": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Presence Penalty"
+          }
+        },
+        "type": "object",
+        "title": "GenerationConfig",
+        "description": "Generation hyperparameters for LLM calls."
+      },
+      "GenerationRecordResponse": {
+        "properties": {
+          "generation": {
+            "type": "integer",
+            "title": "Generation"
+          },
+          "best_fitness": {
+            "type": "number",
+            "title": "Best Fitness"
+          },
+          "avg_fitness": {
+            "type": "number",
+            "title": "Avg Fitness"
+          },
+          "best_normalized": {
+            "type": "number",
+            "title": "Best Normalized",
+            "default": 0.0
+          },
+          "avg_normalized": {
+            "type": "number",
+            "title": "Avg Normalized",
+            "default": 0.0
+          },
+          "candidates_evaluated": {
+            "type": "integer",
+            "title": "Candidates Evaluated",
+            "default": 0
+          },
+          "cost_summary": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Cost Summary",
+            "default": {}
+          }
+        },
+        "type": "object",
+        "required": [
+          "generation",
+          "best_fitness",
+          "avg_fitness"
+        ],
+        "title": "GenerationRecordResponse",
+        "description": "Per-generation metrics for fitness progression chart."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ImportPersonasResponse": {
+        "properties": {
+          "added_count": {
+            "type": "integer",
+            "title": "Added Count"
+          },
+          "skipped_count": {
+            "type": "integer",
+            "title": "Skipped Count"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "added_count",
+          "skipped_count",
+          "total"
+        ],
+        "title": "ImportPersonasResponse",
+        "description": "Response from persona import operation."
+      },
+      "LineageEventResponse": {
+        "properties": {
+          "candidate_id": {
+            "type": "string",
+            "title": "Candidate Id"
+          },
+          "parent_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Parent Ids",
+            "default": []
+          },
+          "generation": {
+            "type": "integer",
+            "title": "Generation"
+          },
+          "island": {
+            "type": "integer",
+            "title": "Island",
+            "default": 0
+          },
+          "fitness_score": {
+            "type": "number",
+            "title": "Fitness Score",
+            "default": 0.0
+          },
+          "normalized_score": {
+            "type": "number",
+            "title": "Normalized Score",
+            "default": 0.0
+          },
+          "rejected": {
+            "type": "boolean",
+            "title": "Rejected",
+            "default": false
+          },
+          "mutation_type": {
+            "type": "string",
+            "title": "Mutation Type",
+            "default": "rcc"
+          },
+          "survived": {
+            "type": "boolean",
+            "title": "Survived",
+            "default": true
+          },
+          "template": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Template"
+          }
+        },
+        "type": "object",
+        "required": [
+          "candidate_id",
+          "generation"
+        ],
+        "title": "LineageEventResponse",
+        "description": "A single lineage event from the evolution run."
+      },
+      "ModelInfo": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "context_length": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context Length"
+          },
+          "input_price_per_mtok": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Price Per Mtok"
+          },
+          "output_price_per_mtok": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Price Per Mtok"
+          },
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "provider"
+        ],
+        "title": "ModelInfo",
+        "description": "Normalized model metadata returned by the /api/models endpoint.\n\nFields:\n    id: Value passed to model= in API calls (e.g. \"gemini-2.5-pro\").\n    name: Human-readable display name (e.g. \"Gemini 2.5 Pro\").\n    context_length: Maximum input token limit, if known.\n    input_price_per_mtok: USD per 1M input tokens (OpenRouter only).\n    output_price_per_mtok: USD per 1M output tokens (OpenRouter only).\n    provider: Source provider (\"openrouter\" or \"gemini\")."
+      },
+      "PersonaProfileResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "traits": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Traits"
+          },
+          "communication_style": {
+            "type": "string",
+            "title": "Communication Style"
+          },
+          "goal": {
+            "type": "string",
+            "title": "Goal"
+          },
+          "edge_cases": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Edge Cases",
+            "default": []
+          },
+          "behavior_criteria": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Behavior Criteria",
+            "default": []
+          },
+          "language": {
+            "type": "string",
+            "title": "Language",
+            "default": "en"
+          },
+          "channel": {
+            "type": "string",
+            "title": "Channel",
+            "default": "text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "role",
+          "traits",
+          "communication_style",
+          "goal"
+        ],
+        "title": "PersonaProfileResponse",
+        "description": "Response representation of a persona profile."
+      },
+      "PlaygroundConfigResponse": {
+        "properties": {
+          "turn_limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Turn Limit"
+          },
+          "budget": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Budget"
+          }
+        },
+        "type": "object",
+        "title": "PlaygroundConfigResponse",
+        "description": "Response with playground config (turn_limit, budget) for a prompt."
+      },
+      "PlaygroundConfigUpdateRequest": {
+        "properties": {
+          "turn_limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Turn Limit"
+          },
+          "budget": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Budget"
+          }
+        },
+        "type": "object",
+        "title": "PlaygroundConfigUpdateRequest",
+        "description": "Request body for updating playground config (turn_limit, budget)."
+      },
+      "PlaygroundVariablesResponse": {
+        "properties": {
+          "prompt_id": {
+            "type": "string",
+            "title": "Prompt Id"
+          },
+          "variables": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Variables"
+          }
+        },
+        "type": "object",
+        "required": [
+          "prompt_id",
+          "variables"
+        ],
+        "title": "PlaygroundVariablesResponse",
+        "description": "Response with saved variable values for a prompt."
+      },
+      "PlaygroundVariablesUpdateRequest": {
+        "properties": {
+          "variables": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Variables"
+          }
+        },
+        "type": "object",
+        "required": [
+          "variables"
+        ],
+        "title": "PlaygroundVariablesUpdateRequest",
+        "description": "Request body for saving playground variable values."
+      },
+      "PresetResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Data"
+          },
+          "is_default": {
+            "type": "boolean",
+            "title": "Is Default"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "type",
+          "data",
+          "is_default",
+          "created_at"
+        ],
+        "title": "PresetResponse",
+        "description": "Response representation of a config or evolution preset."
+      },
+      "PromptConfigResponse": {
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/RoleConfigResponse"
+          },
+          "target": {
+            "$ref": "#/components/schemas/RoleConfigResponse"
+          },
+          "judge": {
+            "$ref": "#/components/schemas/RoleConfigResponse"
+          },
+          "tool_mocker": {
+            "$ref": "#/components/schemas/ToolMockerConfigResponse"
+          },
+          "overrides": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Overrides"
+          }
+        },
+        "type": "object",
+        "required": [
+          "meta",
+          "target",
+          "judge",
+          "tool_mocker",
+          "overrides"
+        ],
+        "title": "PromptConfigResponse",
+        "description": "Response from GET/PUT /api/prompts/{id}/config.\n\nContains effective (merged) values per role and the raw overrides dict\nso the UI can show Global/Override provenance badges."
+      },
+      "PromptConfigSchema": {
+        "properties": {
+          "meta_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meta Model"
+          },
+          "target_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Model"
+          },
+          "judge_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judge Model"
+          },
+          "meta_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meta Provider"
+          },
+          "target_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Provider"
+          },
+          "judge_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judge Provider"
+          },
+          "meta_temperature": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meta Temperature"
+          },
+          "target_temperature": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Temperature"
+          },
+          "judge_temperature": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judge Temperature"
+          },
+          "meta_thinking_budget": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meta Thinking Budget"
+          },
+          "target_thinking_budget": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Thinking Budget"
+          },
+          "judge_thinking_budget": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judge Thinking Budget"
+          },
+          "tool_mocker_mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Mocker Mode"
+          },
+          "tool_mocker_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Mocker Provider"
+          },
+          "tool_mocker_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Mocker Model"
+          },
+          "generation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GenerationConfig"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "title": "PromptConfigSchema",
+        "description": "Schema for config.json sidecar file.\n\nContains per-prompt configuration overrides that get merged\nonto the global GeneConfig via load_prompt_config.\n\nAll fields are optional (None = use global default). The to_json()\nmethod uses exclude_none to keep config.json files clean and\nbackward-compatible with existing prompts."
+      },
+      "PromptDetail": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "template_variables": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Template Variables"
+          },
+          "anchor_variables": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Anchor Variables"
+          },
+          "template": {
+            "type": "string",
+            "title": "Template"
+          },
+          "tools": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tools"
+          },
+          "tool_schemas": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Schemas"
+          },
+          "mocks": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mocks"
+          },
+          "variable_definitions": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variable Definitions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "purpose",
+          "template_variables",
+          "anchor_variables",
+          "template"
+        ],
+        "title": "PromptDetail",
+        "description": "Full prompt detail including template content."
+      },
+      "PromptSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "template_variables": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Template Variables"
+          },
+          "anchor_variables": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Anchor Variables"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "purpose",
+          "template_variables",
+          "anchor_variables"
+        ],
+        "title": "PromptSummary",
+        "description": "Summary representation of a registered prompt."
+      },
+      "PromptVersionResponse": {
+        "properties": {
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "template": {
+            "type": "string",
+            "title": "Template"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active"
+          }
+        },
+        "type": "object",
+        "required": [
+          "version",
+          "template",
+          "created_at",
+          "is_active"
+        ],
+        "title": "PromptVersionResponse",
+        "description": "Response representation of a prompt version."
+      },
+      "ReviewDecision": {
+        "properties": {
+          "conversation_index": {
+            "type": "integer",
+            "title": "Conversation Index"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "approve",
+              "reject"
+            ],
+            "title": "Action"
+          },
+          "edits": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edits"
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversation_index",
+          "action"
+        ],
+        "title": "ReviewDecision",
+        "description": "Per-conversation approve/reject decision for synthesis review."
+      },
+      "ReviewRequest": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "decisions": {
+            "items": {
+              "$ref": "#/components/schemas/ReviewDecision"
+            },
+            "type": "array",
+            "title": "Decisions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "run_id",
+          "decisions"
+        ],
+        "title": "ReviewRequest",
+        "description": "Request body for submitting review decisions on synthesized conversations."
+      },
+      "ReviewResponse": {
+        "properties": {
+          "approved": {
+            "type": "integer",
+            "title": "Approved"
+          },
+          "rejected": {
+            "type": "integer",
+            "title": "Rejected"
+          },
+          "case_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Case Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "approved",
+          "rejected",
+          "case_ids"
+        ],
+        "title": "ReviewResponse",
+        "description": "Response from review endpoint with persist counts."
+      },
+      "RoleConfig": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "has_key": {
+            "type": "boolean",
+            "title": "Has Key"
+          },
+          "key_hint": {
+            "type": "string",
+            "title": "Key Hint",
+            "default": ""
+          },
+          "thinking_budget": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thinking Budget"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider",
+          "model",
+          "has_key"
+        ],
+        "title": "RoleConfig",
+        "description": "Configuration for a single role (meta/target/judge)."
+      },
+      "RoleConfigResponse": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "temperature": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature"
+          },
+          "thinking_budget": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thinking Budget"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider",
+          "model",
+          "temperature",
+          "thinking_budget"
+        ],
+        "title": "RoleConfigResponse",
+        "description": "Effective configuration for a single role (meta/target/judge) with merged values."
+      },
+      "RunResultsResponse": {
+        "properties": {
+          "prompt_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Id"
+          },
+          "lineage_events": {
+            "items": {
+              "$ref": "#/components/schemas/LineageEventResponse"
+            },
+            "type": "array",
+            "title": "Lineage Events",
+            "default": []
+          },
+          "case_results": {
+            "items": {
+              "$ref": "#/components/schemas/CaseResultResponse"
+            },
+            "type": "array",
+            "title": "Case Results",
+            "default": []
+          },
+          "seed_case_results": {
+            "items": {
+              "$ref": "#/components/schemas/CaseResultResponse"
+            },
+            "type": "array",
+            "title": "Seed Case Results",
+            "default": []
+          },
+          "generation_records": {
+            "items": {
+              "$ref": "#/components/schemas/GenerationRecordResponse"
+            },
+            "type": "array",
+            "title": "Generation Records",
+            "default": []
+          },
+          "best_candidate_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Candidate Id"
+          },
+          "best_template": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Template"
+          },
+          "total_cost_usd": {
+            "type": "number",
+            "title": "Total Cost Usd",
+            "default": 0.0
+          },
+          "best_fitness_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Fitness Score"
+          },
+          "best_normalized_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Best Normalized Score"
+          },
+          "generations_completed": {
+            "type": "integer",
+            "title": "Generations Completed",
+            "default": 0
+          },
+          "termination_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Termination Reason"
+          },
+          "meta_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meta Model"
+          },
+          "target_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Model"
+          },
+          "judge_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judge Model"
+          },
+          "meta_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meta Provider"
+          },
+          "target_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Provider"
+          },
+          "judge_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judge Provider"
+          },
+          "hyperparameters": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hyperparameters"
+          }
+        },
+        "type": "object",
+        "title": "RunResultsResponse",
+        "description": "Full results for a completed evolution run, used by visualization components."
+      },
+      "SettingsResponse": {
+        "properties": {
+          "meta": {
+            "$ref": "#/components/schemas/RoleConfig"
+          },
+          "target": {
+            "$ref": "#/components/schemas/RoleConfig"
+          },
+          "judge": {
+            "$ref": "#/components/schemas/RoleConfig"
+          },
+          "concurrency_limit": {
+            "type": "integer",
+            "title": "Concurrency Limit"
+          },
+          "generation": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Generation"
+          },
+          "providers": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Providers"
+          },
+          "has_db_keys": {
+            "type": "boolean",
+            "title": "Has Db Keys",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "meta",
+          "target",
+          "judge",
+          "concurrency_limit",
+          "generation",
+          "providers"
+        ],
+        "title": "SettingsResponse",
+        "description": "Response from GET /api/settings."
+      },
+      "SettingsUpdateRequest": {
+        "properties": {
+          "meta_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meta Provider"
+          },
+          "meta_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meta Model"
+          },
+          "target_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Provider"
+          },
+          "target_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Model"
+          },
+          "judge_provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judge Provider"
+          },
+          "judge_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judge Model"
+          },
+          "openrouter_api_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Openrouter Api Key"
+          },
+          "gemini_api_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Gemini Api Key"
+          },
+          "openai_api_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Openai Api Key"
+          },
+          "concurrency_limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Concurrency Limit"
+          },
+          "generation": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generation"
+          },
+          "meta_thinking_budget": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meta Thinking Budget"
+          },
+          "target_thinking_budget": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Thinking Budget"
+          },
+          "judge_thinking_budget": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Judge Thinking Budget"
+          }
+        },
+        "type": "object",
+        "title": "SettingsUpdateRequest",
+        "description": "Request body for PUT /api/settings. All fields optional for partial update."
+      },
+      "SynthesizeRequest": {
+        "properties": {
+          "persona_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Persona Ids"
+          },
+          "num_conversations": {
+            "type": "integer",
+            "title": "Num Conversations",
+            "default": 5
+          },
+          "max_turns": {
+            "type": "integer",
+            "title": "Max Turns",
+            "default": 10
+          },
+          "scenario_context": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scenario Context"
+          },
+          "review_mode": {
+            "type": "boolean",
+            "title": "Review Mode",
+            "default": true
+          }
+        },
+        "type": "object",
+        "title": "SynthesizeRequest",
+        "description": "Request body for starting a synthesis run."
+      },
+      "SynthesizeResponse": {
+        "properties": {
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "total_personas": {
+            "type": "integer",
+            "title": "Total Personas"
+          },
+          "num_conversations": {
+            "type": "integer",
+            "title": "Num Conversations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "run_id",
+          "status",
+          "total_personas",
+          "num_conversations"
+        ],
+        "title": "SynthesizeResponse",
+        "description": "Response from starting a synthesis run."
+      },
+      "TestCaseCreateRequest": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "chat_history": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Chat History",
+            "default": []
+          },
+          "variables": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Variables",
+            "default": {}
+          },
+          "tools": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tools"
+          },
+          "expected_output": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Output"
+          },
+          "tier": {
+            "type": "string",
+            "title": "Tier",
+            "default": "normal"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags",
+            "default": []
+          }
+        },
+        "type": "object",
+        "title": "TestCaseCreateRequest",
+        "description": "Request body for creating a new test case."
+      },
+      "TestCaseResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "tier": {
+            "type": "string",
+            "title": "Tier"
+          },
+          "variables": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Variables"
+          },
+          "expected_output": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Output"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Tags"
+          },
+          "chat_history": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Chat History"
+          },
+          "tools": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tools"
+          },
+          "validation_warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Validation Warnings",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "tier",
+          "variables",
+          "expected_output",
+          "tags",
+          "chat_history"
+        ],
+        "title": "TestCaseResponse",
+        "description": "Response representation of a test case."
+      },
+      "TestCaseUpdateRequest": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "chat_history": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chat History"
+          },
+          "variables": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variables"
+          },
+          "tools": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tools"
+          },
+          "expected_output": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected Output"
+          },
+          "tier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tier"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          }
+        },
+        "type": "object",
+        "title": "TestCaseUpdateRequest",
+        "description": "Request body for updating an existing test case. All fields optional."
+      },
+      "TestConnectionRequest": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "title": "Provider"
+          },
+          "api_key": {
+            "type": "string",
+            "title": "Api Key"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider",
+          "api_key"
+        ],
+        "title": "TestConnectionRequest",
+        "description": "Request body for POST /api/settings/test-connection."
+      },
+      "TestConnectionResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success"
+        ],
+        "title": "TestConnectionResponse",
+        "description": "Response from POST /api/settings/test-connection."
+      },
+      "ToolMockerConfigResponse": {
+        "properties": {
+          "mode": {
+            "type": "string",
+            "title": "Mode"
+          },
+          "provider": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mode",
+          "provider",
+          "model"
+        ],
+        "title": "ToolMockerConfigResponse",
+        "description": "Configuration for the Tool Mocker role (static YAML or LLM-based)."
+      },
+      "UpdatePersonaRequest": {
+        "properties": {
+          "role": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Role"
+          },
+          "traits": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Traits"
+          },
+          "communication_style": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Communication Style"
+          },
+          "goal": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Goal"
+          },
+          "edge_cases": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edge Cases"
+          },
+          "behavior_criteria": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Behavior Criteria"
+          },
+          "language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language"
+          },
+          "channel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Channel"
+          }
+        },
+        "type": "object",
+        "title": "UpdatePersonaRequest",
+        "description": "Request body for updating a persona. All fields optional for partial update."
+      },
+      "UpdatePresetRequest": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "data": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Data"
+          },
+          "is_default": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Default"
+          }
+        },
+        "type": "object",
+        "title": "UpdatePresetRequest",
+        "description": "Request body for updating a preset. All fields optional."
+      },
+      "UpdateTemplateRequest": {
+        "properties": {
+          "template": {
+            "type": "string",
+            "title": "Template"
+          }
+        },
+        "type": "object",
+        "required": [
+          "template"
+        ],
+        "title": "UpdateTemplateRequest",
+        "description": "Request body for updating a prompt's template."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "WizardGenerateRequest": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "purpose": {
+            "type": "string",
+            "title": "Purpose"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "variables": {
+            "items": {
+              "$ref": "#/components/schemas/WizardVariable"
+            },
+            "type": "array",
+            "title": "Variables",
+            "default": []
+          },
+          "constraints": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Constraints"
+          },
+          "behaviors": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Behaviors"
+          },
+          "include_tools": {
+            "type": "boolean",
+            "title": "Include Tools",
+            "default": false
+          },
+          "tool_descriptions": {
+            "anyOf": [
+              {
+                "items": {
+                  "additionalProperties": true,
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Descriptions"
+          },
+          "language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language"
+          },
+          "channel": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Channel"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "purpose"
+        ],
+        "title": "WizardGenerateRequest",
+        "description": "Request body for wizard template generation."
+      },
+      "WizardGenerateResponse": {
+        "properties": {
+          "yaml_template": {
+            "type": "string",
+            "title": "Yaml Template"
+          }
+        },
+        "type": "object",
+        "required": [
+          "yaml_template"
+        ],
+        "title": "WizardGenerateResponse",
+        "description": "Response from wizard template generation."
+      },
+      "WizardVariable": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "var_type": {
+            "type": "string",
+            "title": "Var Type",
+            "default": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "is_anchor": {
+            "type": "boolean",
+            "title": "Is Anchor",
+            "default": false
+          },
+          "examples": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Examples"
+          },
+          "items_schema": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/WizardVariable"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Items Schema"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "WizardVariable",
+        "description": "Variable definition from wizard form."
+      }
+    }
+  }
+}

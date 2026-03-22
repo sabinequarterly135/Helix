@@ -1,0 +1,12 @@
+{
+  "customer_name": "Maria Lopez",
+  "business_name": "Pizza Ejemplo",
+  "business_services": "Pizzas artesanales, pastas, ensaladas, bebidas, catering para eventos",
+  "business_hours": "Lunes a Domingo 11:00-23:00",
+  "location_address": "Calle Ficticia 456, Col. Inventada, CDMX",
+  "location_phone": "+52 55 0000 0000",
+  "location_team_members": "Luis (Pedidos), Sofia (Eventos), Diego (Recursos Humanos), Carmen (Reservaciones)",
+  "special_instructions": "Siempre confirmar el nombre del cliente antes de transferir",
+  "greeting_style": "amigable",
+  "escalation_rules": "Si el cliente pide hablar con un gerente, transferir a extension 200"
+}

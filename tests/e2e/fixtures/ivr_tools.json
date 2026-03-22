@@ -1,0 +1,23 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "transfer_to_number",
+      "description": "Transfer the caller to a specific department or person",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "target": {
+            "type": "string",
+            "description": "Department name or person to transfer to"
+          },
+          "summary": {
+            "type": "string",
+            "description": "Brief summary of the caller's request"
+          }
+        },
+        "required": ["target", "summary"]
+      }
+    }
+  }
+]

@@ -1,0 +1,124 @@
+[
+  {
+    "id": "e2e-case-001-greeting",
+    "name": "Greeting",
+    "description": "Basic greeting test - customer says hello",
+    "chat_history": [
+      {"role": "user", "content": "Hola"}
+    ],
+    "variables": {},
+    "tools": null,
+    "expected_output": {
+      "content": "A friendly greeting mentioning Pizza Ejemplo"
+    },
+    "tier": "critical"
+  },
+  {
+    "id": "e2e-case-002-order-transfer",
+    "name": "Direct transfer to orders",
+    "description": "Customer wants to order - should transfer to Pedidos/Luis",
+    "chat_history": [
+      {"role": "user", "content": "Quiero hacer un pedido"}
+    ],
+    "variables": {},
+    "tools": null,
+    "expected_output": {
+      "tool_calls": [
+        {
+          "name": "transfer_to_number",
+          "arguments": {
+            "target": "Pedidos",
+            "summary": "Cliente quiere hacer un pedido"
+          }
+        }
+      ]
+    },
+    "tier": "critical"
+  },
+  {
+    "id": "e2e-case-003-events-transfer",
+    "name": "Transfer to events",
+    "description": "Customer needs catering - should transfer to Eventos/Sofia",
+    "chat_history": [
+      {"role": "user", "content": "Necesito catering para una fiesta"}
+    ],
+    "variables": {},
+    "tools": null,
+    "expected_output": {
+      "tool_calls": [
+        {
+          "name": "transfer_to_number",
+          "arguments": {
+            "target": "Eventos",
+            "summary": "Cliente necesita catering para una fiesta"
+          }
+        }
+      ]
+    },
+    "tier": "normal"
+  },
+  {
+    "id": "e2e-case-004-ambiguous",
+    "name": "Ambiguous routing",
+    "description": "Ambiguous request - should ask for clarification",
+    "chat_history": [
+      {"role": "user", "content": "Necesito ayuda"}
+    ],
+    "variables": {},
+    "tools": null,
+    "expected_output": {
+      "content": "Ask for clarification about what kind of help the customer needs"
+    },
+    "tier": "normal"
+  },
+  {
+    "id": "e2e-case-005-info-query",
+    "name": "Information query",
+    "description": "Customer asks about business hours - should respond with hours directly",
+    "chat_history": [
+      {"role": "user", "content": "Cual es su horario?"}
+    ],
+    "variables": {},
+    "tools": null,
+    "expected_output": {
+      "content": "Response containing business hours: Lunes a Domingo 11:00-23:00"
+    },
+    "tier": "normal"
+  },
+  {
+    "id": "e2e-case-006-escalation",
+    "name": "Escalation to manager",
+    "description": "Customer asks for a manager - should transfer to extension 200",
+    "chat_history": [
+      {"role": "user", "content": "Quiero hablar con un gerente"}
+    ],
+    "variables": {},
+    "tools": null,
+    "expected_output": {
+      "tool_calls": [
+        {
+          "name": "transfer_to_number",
+          "arguments": {
+            "target": "extension 200",
+            "summary": "Cliente solicita hablar con un gerente"
+          }
+        }
+      ]
+    },
+    "tier": "normal"
+  },
+  {
+    "id": "e2e-case-007-off-topic",
+    "name": "Off-topic request",
+    "description": "Customer asks about something unrelated - should redirect to restaurant services",
+    "chat_history": [
+      {"role": "user", "content": "Me pueden ayudar con mi declaracion de impuestos?"}
+    ],
+    "variables": {},
+    "tools": null,
+    "expected_output": {
+      "content": "Polite redirect explaining this is a pizza restaurant and listing available services"
+    },
+    "tier": "low"
+  }
+]
