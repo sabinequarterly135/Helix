@@ -357,8 +357,8 @@
     "provider": "Provider"
   },
   "datasets": {
-    "testCases": "{{count}} test case",
-    "testCases_plural": "{{count}} test cases",
+    "testCases_one": "{{count}} test case",
+    "testCases_other": "{{count}} test cases",
     "generateTests": "Generate Tests",
     "addCase": "Add Case",
     "noTestCasesYet": "No test cases yet",
