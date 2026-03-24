@@ -1,7 +1,7 @@
 > 🌐 [English](README.md) | [中文](README.zh-CN.md)
 
 <p align="center">
-  <img src="docs/logo.png" alt="Helix Logo" width="160" />
+  <img src="docs/logo.png" alt="Helix Logo" width="300" />
 </p>
 
 <h1 align="center">Helix</h1>
@@ -38,6 +38,10 @@ Helix includes a web dashboard for configuration, real-time monitoring during ev
 |:---:|:---:|:---:|
 | ![Template](docs/screenshots/template-tab.png) | ![Run Detail](docs/screenshots/run-detail.png) | ![Lineage](docs/screenshots/lineage.png) |
 | Template preview with formatted tool cards | Fitness progression & island topology | Phylogenetic tree of evolved candidates |
+
+### Run Analysis — Diffs, Lineage & Test Results
+
+![Run Analysis](docs/screenshots/helix-run-analysis.gif)
 
 ## Quickstart
 
