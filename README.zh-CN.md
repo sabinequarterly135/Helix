@@ -45,6 +45,9 @@ Helix 包含一个 Web 仪表板，用于配置、进化运行期间的实时监
 ### 进化 — 实时监控
 ![进化](docs/screenshots/evolution-tab.png)
 
+### 历史 — 进化运行记录
+![历史](docs/screenshots/history-tab.png)
+
 ### 运行结果 — 适应度与分析
 ![运行结果](docs/screenshots/run-detail.png)
 

@@ -45,6 +45,9 @@ Helix includes a web dashboard for configuration, real-time monitoring during ev
 ### Evolution — Live Monitoring
 ![Evolution](docs/screenshots/evolution-tab.png)
 
+### History — Evolution Runs
+![History](docs/screenshots/history-tab.png)
+
 ### Run Results — Fitness & Analysis
 ![Run Results](docs/screenshots/run-detail.png)
 
