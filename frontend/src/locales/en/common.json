@@ -212,6 +212,7 @@
     "seedFitness": "Seed Fitness",
     "improvement": "Improvement",
     "termination": "Termination",
+    "stopReason": "Stop Reason",
     "lineageEvents": "Lineage Events",
     "totalCost": "Total Cost",
     "running": "Running...",
