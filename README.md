@@ -1,3 +1,5 @@
+> 🌐 [English](README.md) | [中文](README.zh-CN.md)
+
 # Helix
 
 A tool for iteratively improving LLM prompts using automated testing. Helix evolves your prompt text against a dataset of test cases until it passes every case -- without breaking what already works.
@@ -28,8 +30,29 @@ Helix includes a web dashboard for configuration, real-time monitoring during ev
 
 ## Screenshots
 
-<!-- TODO: Add screenshots of the dashboard, evolution monitoring, and analysis views -->
-Screenshots coming soon.
+### Prompts Dashboard
+![Prompts Dashboard](docs/screenshots/prompts-list.png)
+
+### Template Preview
+![Template Preview](docs/screenshots/template-tab.png)
+
+### Dataset & Test Cases
+![Dataset](docs/screenshots/dataset-tab.png)
+
+### Config — Model Roles
+![Config](docs/screenshots/config-tab.png)
+
+### Evolution — Live Monitoring
+![Evolution](docs/screenshots/evolution-tab.png)
+
+### History — Evolution Runs
+![History](docs/screenshots/history-tab.png)
+
+### Run Results — Fitness & Analysis
+![Run Results](docs/screenshots/run-detail.png)
+
+### Settings
+![Settings](docs/screenshots/settings.png)
 
 ## Quickstart
 
