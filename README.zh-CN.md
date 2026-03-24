@@ -39,6 +39,10 @@ Helix 包含一个 Web 仪表板，用于配置、进化运行期间的实时监
 | ![模板](docs/screenshots/template-tab.png) | ![运行详情](docs/screenshots/run-detail.png) | ![谱系](docs/screenshots/lineage.png) |
 | 模板预览与格式化工具卡片 | 适应度曲线与岛屿拓扑 | 进化候选者的系谱树 |
 
+### 运行分析 — 差异对比、谱系与测试结果
+
+![运行分析](docs/screenshots/helix-run-analysis.gif)
+
 ## 快速开始
 
 ### 前置条件
