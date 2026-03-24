@@ -343,7 +343,7 @@ export default function EvolutionDashboard({ runId }: EvolutionDashboardProps) {
       {isComplete ? (
         <div>
           <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pb-4">
-            <div className="inline-flex rounded-lg border bg-muted p-1 gap-1">
+            <div className="flex items-center gap-1 border-b border-border">
               {[
                 { value: 'overview', label: 'Overview' },
                 { value: 'lineage', label: 'Lineage' },
@@ -356,10 +356,10 @@ export default function EvolutionDashboard({ runId }: EvolutionDashboardProps) {
                   key={tab.value}
                   onClick={() => setActiveTab(tab.value)}
                   className={cn(
-                    'px-3 py-1.5 rounded-md text-sm font-medium transition-colors',
+                    'px-3 py-2 text-xs font-medium transition-colors border-b-2 -mb-px',
                     activeTab === tab.value
-                      ? 'bg-background text-foreground shadow-sm'
-                      : 'text-muted-foreground hover:text-foreground'
+                      ? 'border-primary text-foreground'
+                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30'
                   )}
                 >
                   {tab.label}
