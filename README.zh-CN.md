@@ -34,29 +34,10 @@ Helix 包含一个 Web 仪表板，用于配置、进化运行期间的实时监
 
 ## 截图
 
-### 提示词仪表板
-![提示词仪表板](docs/screenshots/prompts-list.png)
-
-### 模板预览
-![模板预览](docs/screenshots/template-tab.png)
-
-### 数据集与测试用例
-![数据集](docs/screenshots/dataset-tab.png)
-
-### 配置 — 模型角色
-![配置](docs/screenshots/config-tab.png)
-
-### 进化 — 实时监控
-![进化](docs/screenshots/evolution-tab.png)
-
-### 历史 — 进化运行记录
-![历史](docs/screenshots/history-tab.png)
-
-### 运行结果 — 适应度与分析
-![运行结果](docs/screenshots/run-detail.png)
-
-### 设置
-![设置](docs/screenshots/settings.png)
+| 模板与工具 | 进化结果 | 谱系树 |
+|:---:|:---:|:---:|
+| ![模板](docs/screenshots/template-tab.png) | ![运行详情](docs/screenshots/run-detail.png) | ![谱系](docs/screenshots/lineage.png) |
+| 模板预览与格式化工具卡片 | 适应度曲线与岛屿拓扑 | 进化候选者的系谱树 |
 
 ## 快速开始
 

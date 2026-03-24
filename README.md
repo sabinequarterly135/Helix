@@ -34,29 +34,10 @@ Helix includes a web dashboard for configuration, real-time monitoring during ev
 
 ## Screenshots
 
-### Prompts Dashboard
-![Prompts Dashboard](docs/screenshots/prompts-list.png)
-
-### Template Preview
-![Template Preview](docs/screenshots/template-tab.png)
-
-### Dataset & Test Cases
-![Dataset](docs/screenshots/dataset-tab.png)
-
-### Config — Model Roles
-![Config](docs/screenshots/config-tab.png)
-
-### Evolution — Live Monitoring
-![Evolution](docs/screenshots/evolution-tab.png)
-
-### History — Evolution Runs
-![History](docs/screenshots/history-tab.png)
-
-### Run Results — Fitness & Analysis
-![Run Results](docs/screenshots/run-detail.png)
-
-### Settings
-![Settings](docs/screenshots/settings.png)
+| Template & Tools | Evolution Results | Lineage Tree |
+|:---:|:---:|:---:|
+| ![Template](docs/screenshots/template-tab.png) | ![Run Detail](docs/screenshots/run-detail.png) | ![Lineage](docs/screenshots/lineage.png) |
+| Template preview with formatted tool cards | Fitness progression & island topology | Phylogenetic tree of evolved candidates |
 
 ## Quickstart
 
