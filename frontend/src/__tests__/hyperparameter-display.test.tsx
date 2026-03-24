@@ -1,9 +1,10 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import HyperparameterDisplay, { isOverride } from '../components/evolution/HyperparameterDisplay'
 
 describe('HyperparameterDisplay', () => {
-  it('renders category headings when params from each group are present', () => {
+  it('renders category headings when params from each group are present', async () => {
     const hyperparameters = {
       generations: 10,
       conversations_per_island: 5,
@@ -14,17 +15,22 @@ describe('HyperparameterDisplay', () => {
     }
     render(<HyperparameterDisplay hyperparameters={hyperparameters} />)
 
+    // Expand the detail section
+    await userEvent.click(screen.getByText('All parameters'))
+
     expect(screen.getByText('Evolution')).toBeInTheDocument()
     expect(screen.getByText('Sampling')).toBeInTheDocument()
     expect(screen.getByText('Island Model')).toBeInTheDocument()
   })
 
-  it('does not render empty categories (Inference heading absent when no inference sub-dict)', () => {
+  it('does not render empty categories (Inference heading absent when no inference sub-dict)', async () => {
     const hyperparameters = {
       generations: 10,
       n_islands: 4,
     }
     render(<HyperparameterDisplay hyperparameters={hyperparameters} />)
+
+    await userEvent.click(screen.getByText('All parameters'))
 
     expect(screen.getByText('Evolution')).toBeInTheDocument()
     expect(screen.getByText('Island Model')).toBeInTheDocument()
@@ -59,7 +65,7 @@ describe('HyperparameterDisplay', () => {
     expect(screen.queryByText('override')).not.toBeInTheDocument()
   })
 
-  it('handles inference sub-dict -- flattens inference.temperature to display in Inference group', () => {
+  it('handles inference sub-dict -- flattens inference.temperature to display in Inference group', async () => {
     const hyperparameters = {
       generations: 10,
       inference: {
@@ -69,6 +75,8 @@ describe('HyperparameterDisplay', () => {
       },
     }
     render(<HyperparameterDisplay hyperparameters={hyperparameters} />)
+
+    await userEvent.click(screen.getByText('All parameters'))
 
     // Inference group should be visible
     expect(screen.getByText('Inference')).toBeInTheDocument()
@@ -83,7 +91,7 @@ describe('HyperparameterDisplay', () => {
     expect(overrideBadges.length).toBeGreaterThanOrEqual(1)
   })
 
-  it('shows Thinking group when thinking sub-dict present with override badges', () => {
+  it('shows Thinking group when thinking sub-dict present with override badges', async () => {
     const hyperparameters = {
       generations: 10,
       thinking: {
@@ -91,6 +99,8 @@ describe('HyperparameterDisplay', () => {
       },
     }
     render(<HyperparameterDisplay hyperparameters={hyperparameters} />)
+
+    await userEvent.click(screen.getByText('All parameters'))
 
     // Thinking group heading should be visible
     expect(screen.getByText('Thinking')).toBeInTheDocument()
@@ -113,7 +123,7 @@ describe('HyperparameterDisplay', () => {
     expect(screen.queryByText('Thinking')).not.toBeInTheDocument()
   })
 
-  it('handles old run data gracefully (no inference key, no crash)', () => {
+  it('handles old run data gracefully (no inference key, no crash)', async () => {
     const hyperparameters = {
       generations: 10,
       conversations_per_island: 5,
@@ -135,6 +145,8 @@ describe('HyperparameterDisplay', () => {
     // Should not throw
     const { container } = render(<HyperparameterDisplay hyperparameters={hyperparameters} />)
     expect(container).toBeTruthy()
+
+    await userEvent.click(screen.getByText('All parameters'))
 
     // Should render Evolution and Island Model groups
     expect(screen.getByText('Evolution')).toBeInTheDocument()

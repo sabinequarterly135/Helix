@@ -92,6 +92,7 @@ docker compose -f docker-compose.dev.yml up      # Dev with hot reload
 - Ruff: line-length 100, target py313.
 - Frontend: path aliases via `@/` (maps to `src/`). shadcn/ui components in `components/ui/`.
 - Tests: `pytest-asyncio` with `asyncio_mode = "auto"`. API tests use `httpx.ASGITransport` with dependency overrides and `FakeGitStorage`.
+- **When modifying or creating features/bug fixes, always review and update related test files.** Ensure tests pass before committing.
 
 ## Environment
 
