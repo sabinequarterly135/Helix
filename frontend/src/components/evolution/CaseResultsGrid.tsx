@@ -244,17 +244,18 @@ export default function CaseResultsGrid({
   }
 
   return (
-    <div className="space-y-4">
-      {/* Summary stats bar */}
-      <div className="rounded-lg border border-border bg-card p-4">
-        <div className="mb-2 flex items-center gap-4 text-sm">
+    <div className="rounded-lg border border-border bg-card overflow-hidden">
+      {/* Header with summary stats */}
+      <div className="px-4 py-3 border-b border-border">
+        <div className="flex items-center gap-4 text-sm">
+          <h3 className="text-sm font-semibold text-foreground">Case Results</h3>
           <span className="text-muted-foreground">
             {t('evolution.totalCases', { count: caseResults.length })}
           </span>
-          <span className="text-emerald-400">{t('evolution.passedCount', { count: passedCount })}</span>
-          <span className="text-red-400">{t('evolution.failedCount', { count: failedCount })}</span>
+          <span className="text-emerald-500 font-medium">{t('evolution.passedCount', { count: passedCount })}</span>
+          <span className="text-red-400 font-medium">{t('evolution.failedCount', { count: failedCount })}</span>
         </div>
-        <div className="flex h-2 overflow-hidden rounded-full bg-border">
+        <div className="flex h-1.5 overflow-hidden rounded-full bg-border/50 mt-2">
           <div
             className="bg-emerald-500 transition-[width]"
             style={{ width: `${passRate}%` }}
@@ -267,7 +268,7 @@ export default function CaseResultsGrid({
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-lg border border-border bg-card">
+      <div>
         <table className="w-full">
           <thead>
             <tr className="bg-muted">

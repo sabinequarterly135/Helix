@@ -728,8 +728,8 @@ export function SynthesisDialog({ promptId, open, onOpenChange, onComplete }: Sy
                   {t('datasets.noPersonas')}
                 </div>
               ) : (
-                <ScrollArea className="max-h-64">
-                  <div className="space-y-2 pr-3">
+                <div className="max-h-80 overflow-y-auto">
+                  <div className="space-y-2 pr-1">
                     {personas.map((persona) =>
                       editingPersonaId === persona.id ? (
                         <PersonaEditor
@@ -753,7 +753,7 @@ export function SynthesisDialog({ promptId, open, onOpenChange, onComplete }: Sy
                       )
                     )}
                   </div>
-                </ScrollArea>
+                </div>
               )}
 
               {/* Delete confirmation banner */}

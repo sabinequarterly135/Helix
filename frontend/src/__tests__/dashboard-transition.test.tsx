@@ -74,20 +74,10 @@ vi.mock('../components/evolution/CaseResultsGrid', () => ({
 vi.mock('../components/evolution/HyperparameterDisplay', () => ({
   default: () => <div data-testid="hyperparameter-display">HyperparameterDisplay</div>,
 }))
-vi.mock('../components/evolution/Islands3D', () => ({
-  default: () => <div data-testid="islands-3d">Islands3D</div>,
-}))
-vi.mock('../components/evolution/Lineage3D', () => ({
-  default: () => <div data-testid="lineage-3d">Lineage3D</div>,
-}))
 
-// --- Mock SummaryCards to inspect props ---
+// SummaryCards mock (no longer rendered directly, CompactSummary is used instead)
 vi.mock('../components/evolution/SummaryCards', () => ({
-  default: ({ data }: { data: SummaryData }) => (
-    <div data-testid="summary-cards" data-seed-fitness={data.seedFitness}>
-      SummaryCards
-    </div>
-  ),
+  default: () => null,
 }))
 
 import EvolutionDashboard from '../components/evolution/EvolutionDashboard'
@@ -127,8 +117,7 @@ describe('EvolutionDashboard transition', () => {
 
     renderWithProviders(<EvolutionDashboard runId="test-run-1" />)
 
-    // SummaryCards and FitnessChart should be present
-    expect(screen.getByTestId('summary-cards')).toBeInTheDocument()
+    // Compact summary and FitnessChart should be present
     expect(screen.getByTestId('fitness-chart')).toBeInTheDocument()
 
     // No segmented button group should be rendered (no sub-nav in live view)
@@ -180,11 +169,7 @@ describe('EvolutionDashboard transition', () => {
 
     // Segmented button group should be rendered with expected buttons
     expect(screen.getByText('Overview')).toBeInTheDocument()
-    expect(screen.getByText('Lineage')).toBeInTheDocument()
-    expect(screen.getByText('Prompt Diffs')).toBeInTheDocument()
-    expect(screen.getByText('Mutation Stats')).toBeInTheDocument()
-    expect(screen.getByText('Case Results')).toBeInTheDocument()
-    expect(screen.getByText('3D Islands')).toBeInTheDocument()
+    expect(screen.getByText('Winning Path')).toBeInTheDocument()
   })
 
   it('derives historicalSummary from results when WS has no events', () => {
@@ -245,10 +230,8 @@ describe('EvolutionDashboard transition', () => {
 
     renderWithProviders(<EvolutionDashboard runId="test-run-3" />)
 
-    // SummaryCards should receive seedFitness derived from seed events
+    // CompactSummary should display seed fitness derived from seed events
     // The best seed fitness is max(-3.5, -2.0) = -2.0
-    const summaryCards = screen.getByTestId('summary-cards')
-    expect(summaryCards).toBeInTheDocument()
-    expect(summaryCards.getAttribute('data-seed-fitness')).toBe('-2')
+    expect(screen.getByText(/Seed:.*-2.00/)).toBeInTheDocument()
   })
 })

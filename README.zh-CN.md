@@ -28,7 +28,7 @@ Helix 自带 Web 界面，支持配置管理、实时监控进化过程，也能
 - **实时监控**：通过 WebSocket 将进化过程推送至浏览器
 - **交互式 Playground**：直接和优化后的提示词聊天测试
 - **工具调用模拟**：LLM 自动生成 mock 响应
-- **3D 可视化**：岛屿拓扑图、候选谱系树
+- **交互式谱系图**：点击查看差异对比
 - **多语言**：中文 / English / Español
 - **一键部署**：Docker Compose
 
@@ -37,11 +37,7 @@ Helix 自带 Web 界面，支持配置管理、实时监控进化过程，也能
 | 模板与工具 | 进化结果 | 谱系树 |
 |:---:|:---:|:---:|
 | ![模板](docs/screenshots/template-tab.png) | ![运行详情](docs/screenshots/run-detail.png) | ![谱系](docs/screenshots/lineage.png) |
-| 模板预览与格式化工具卡片 | 适应度曲线与岛屿拓扑 | 候选的进化谱系树 |
-
-### 运行分析 — Diff 对比、谱系与测试结果
-
-![运行分析](docs/screenshots/helix-run-analysis.gif)
+| 模板预览与格式化工具卡片 | 适应度曲线与岛屿概览 | 进化谱系图（点击查看差异） |
 
 ## 快速开始
 
@@ -127,7 +123,7 @@ frontend/src/
 
 **后端**：FastAPI 工厂模式 + SQLAlchemy 2.0 异步 ORM + pydantic-settings 配置管理。进化引擎基于岛屿模型实现并行。
 
-**前端**：React 19 + Vite + TypeScript + Tailwind CSS v4 + shadcn/ui。适应度图表用 Recharts，谱系树用 D3，3D 视图用 React Three Fiber（按需加载）。
+**前端**：React 19 + Vite + TypeScript + Tailwind CSS v4 + shadcn/ui。适应度图表用 Recharts，谱系树用 D3，谱系图和岛屿视图用自定义 SVG。
 
 **通信**：CRUD 操作走 REST，进化事件实时推送走 WebSocket，Playground 聊天流式输出走 SSE。
 
