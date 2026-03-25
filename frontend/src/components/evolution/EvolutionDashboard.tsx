@@ -344,7 +344,7 @@ export default function EvolutionDashboard({ runId }: EvolutionDashboardProps) {
       {isComplete ? (
         <div>
           <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pb-4">
-            <div className="flex items-center gap-1 border-b border-border">
+            <div className="flex items-center gap-1 border-b border-border" role="tablist" aria-label="Evolution results">
               {[
                 { value: 'overview', label: 'Overview' },
                 { value: 'lineage', label: 'Lineage' },
@@ -355,9 +355,12 @@ export default function EvolutionDashboard({ runId }: EvolutionDashboardProps) {
               ].map((tab) => (
                 <button
                   key={tab.value}
+                  role="tab"
+                  aria-selected={activeTab === tab.value}
+                  aria-controls={`panel-${tab.value}`}
                   onClick={() => setActiveTab(tab.value)}
                   className={cn(
-                    'px-3 py-2 text-xs font-medium transition-colors border-b-2 -mb-px',
+                    'px-3 py-2 text-xs font-medium transition-colors border-b-2 -mb-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-t-sm',
                     activeTab === tab.value
                       ? 'border-primary text-foreground'
                       : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30'
@@ -398,7 +401,7 @@ export default function EvolutionDashboard({ runId }: EvolutionDashboardProps) {
           )}
           {activeTab === '3d-islands' && (
             <div className="mt-6">
-              <Suspense fallback={<div className="flex items-center justify-center h-[500px]"><p className="text-slate-400">Loading 3D view...</p></div>}>
+              <Suspense fallback={<div className="flex items-center justify-center h-[500px]"><p className="text-muted-foreground">Loading 3D view...</p></div>}>
                 <Islands3D
                   candidates={effectiveState.candidates}
                   migrations={effectiveState.migrations}
@@ -411,7 +414,7 @@ export default function EvolutionDashboard({ runId }: EvolutionDashboardProps) {
           )}
           {activeTab === 'lineage' && (
             <div className="mt-6">
-              <Suspense fallback={<div className="flex items-center justify-center h-[500px]"><p className="text-slate-400">Loading 3D view...</p></div>}>
+              <Suspense fallback={<div className="flex items-center justify-center h-[500px]"><p className="text-muted-foreground">Loading 3D view...</p></div>}>
                 <Lineage3D
                   lineageEvents={results?.lineageEvents ?? []}
                   bestCandidateId={results?.bestCandidateId ?? null}

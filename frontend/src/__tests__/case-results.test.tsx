@@ -50,7 +50,7 @@ describe('CaseResultsGrid', () => {
     const lowBadge = screen.getByText('low')
     expect(criticalBadge.className).toContain('text-red')
     expect(normalBadge.className).toContain('text-blue')
-    expect(lowBadge.className).toContain('text-slate')
+    expect(lowBadge.className).toContain('text-muted-foreground')
   })
 
   it('expands a row when clicked to show expected vs actual', () => {

@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useMemo } from 'react'
 import type { LineageNode, MutationStat } from '../../types/evolution'
 import { MUTATION_COLORS } from '../../types/evolution'
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table'
 
 interface MutationStatsProps {
   lineageEvents: LineageNode[]
@@ -66,7 +67,7 @@ export default function MutationStats({ lineageEvents }: MutationStatsProps) {
 
   if (entries.length === 0) {
     return (
-      <div className="rounded-lg border border-slate-700 bg-slate-800/50 p-8 text-center text-slate-400">
+      <div className="rounded-lg border border-border bg-card/50 p-8 text-center text-muted-foreground">
         {t('evolution.noMutationData')}
       </div>
     )
@@ -75,8 +76,8 @@ export default function MutationStats({ lineageEvents }: MutationStatsProps) {
   return (
     <div className="space-y-4">
       {/* Distribution bar */}
-      <div className="rounded-lg border border-slate-700 bg-slate-800 p-4">
-        <p className="mb-2 text-xs font-medium uppercase tracking-wider text-slate-400">
+      <div className="rounded-lg border border-border bg-card p-4">
+        <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">
           {t('evolution.mutationDistribution')}
         </p>
         <div className="flex h-4 overflow-hidden rounded-full">
@@ -94,7 +95,7 @@ export default function MutationStats({ lineageEvents }: MutationStatsProps) {
             )
           })}
         </div>
-        <div className="mt-2 flex flex-wrap gap-3 text-xs text-slate-400">
+        <div className="mt-2 flex flex-wrap gap-3 text-xs text-muted-foreground">
           {entries.map(([mtype, s]) => (
             <span key={mtype} className="flex items-center gap-1">
               <span
@@ -110,29 +111,19 @@ export default function MutationStats({ lineageEvents }: MutationStatsProps) {
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-lg border border-slate-700 bg-slate-800">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-slate-700/50">
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-400">
-                {t('evolution.mutationType')}
-              </th>
-              <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-400">
-                Count
-              </th>
-              <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-400">
-                Improved
-              </th>
-              <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-400">
-                Improvement Rate
-              </th>
-              <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-400">
-                Avg Delta
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {entries.map(([mtype, s], idx) => {
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-muted">
+              <TableHead>{t('evolution.mutationType')}</TableHead>
+              <TableHead className="text-right">Count</TableHead>
+              <TableHead className="text-right">Improved</TableHead>
+              <TableHead className="text-right">Improvement Rate</TableHead>
+              <TableHead className="text-right">Avg Delta</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {entries.map(([mtype, s]) => {
               const rate = s.count > 0 ? (s.improved / s.count) * 100 : 0
               const deltaColor =
                 s.avgDelta > 0
@@ -142,13 +133,8 @@ export default function MutationStats({ lineageEvents }: MutationStatsProps) {
                     : '#94a3b8'
 
               return (
-                <tr
-                  key={mtype}
-                  className={`${
-                    idx % 2 === 0 ? 'bg-slate-800/50' : 'bg-slate-900/30'
-                  } hover:bg-slate-700/30`}
-                >
-                  <td className="px-4 py-3">
+                <TableRow key={mtype}>
+                  <TableCell>
                     <span
                       className="inline-block rounded-full px-2.5 py-0.5 text-xs font-semibold"
                       style={{
@@ -158,28 +144,22 @@ export default function MutationStats({ lineageEvents }: MutationStatsProps) {
                     >
                       {mtype}
                     </span>
-                  </td>
-                  <td className="px-4 py-3 text-right text-sm text-slate-300">
-                    {s.count}
-                  </td>
-                  <td className="px-4 py-3 text-right text-sm text-slate-300">
-                    {s.improved}
-                  </td>
-                  <td className="px-4 py-3 text-right text-sm text-slate-300">
-                    {rate.toFixed(1)}%
-                  </td>
-                  <td
-                    className="px-4 py-3 text-right text-sm font-mono"
+                  </TableCell>
+                  <TableCell className="text-right">{s.count}</TableCell>
+                  <TableCell className="text-right">{s.improved}</TableCell>
+                  <TableCell className="text-right">{rate.toFixed(1)}%</TableCell>
+                  <TableCell
+                    className="text-right font-mono"
                     style={{ color: deltaColor }}
                   >
                     {s.avgDelta >= 0 ? '+' : ''}
                     {s.avgDelta.toFixed(4)}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               )
             })}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </div>
   )

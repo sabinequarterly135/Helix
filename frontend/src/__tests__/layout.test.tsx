@@ -29,7 +29,8 @@ describe('AppShell', () => {
       </Routes>
     )
 
-    expect(screen.getByText('Prompts')).toBeInTheDocument()
+    // Both mobile and desktop sidebars render nav items
+    expect(screen.getAllByText('Prompts').length).toBeGreaterThanOrEqual(1)
   })
 
   it('Prompts nav link points to /prompts', () => {
@@ -41,7 +42,8 @@ describe('AppShell', () => {
       </Routes>
     )
 
-    expect(screen.getByText('Prompts').closest('a')).toHaveAttribute('href', '/prompts')
+    const promptLinks = screen.getAllByText('Prompts')
+    expect(promptLinks[0].closest('a')).toHaveAttribute('href', '/prompts')
   })
 
   it('renders outlet for child content at /prompts', () => {
@@ -66,6 +68,7 @@ describe('AppShell', () => {
       </Routes>
     )
 
-    expect(screen.getByText('Helix')).toBeInTheDocument()
+    // Both mobile and desktop sidebars render the app name
+    expect(screen.getAllByText('Helix').length).toBeGreaterThanOrEqual(1)
   })
 })

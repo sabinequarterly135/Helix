@@ -229,8 +229,16 @@ export default function RunHistoryTable({ promptId: propPromptId }: RunHistoryTa
                 return (
                   <TableRow
                     key={run.id}
+                    tabIndex={0}
+                    role="link"
                     onClick={() => navigate(propPromptId ? `${run.id}` : `/history/${run.id}`)}
-                    className="cursor-pointer hover:bg-muted/50 transition-colors"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        navigate(propPromptId ? `${run.id}` : `/history/${run.id}`)
+                      }
+                    }}
+                    className="cursor-pointer hover:bg-muted/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
                   >
                     <TableCell className="font-mono text-xs">{run.id}</TableCell>
                     {!propPromptId && <TableCell>{run.prompt_id}</TableCell>}

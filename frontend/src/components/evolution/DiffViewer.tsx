@@ -121,7 +121,7 @@ export default function DiffViewer({
 
   if (nodesWithTemplates.length < 2) {
     return (
-      <div className="rounded-lg border border-slate-700 bg-slate-800/50 p-8 text-center">
+      <div className="rounded-lg border border-border bg-card/50 p-8 text-center">
         <p style={{ color: COLORS.textMuted }}>{t('evolution.noDiffData')}</p>
       </div>
     )
@@ -131,10 +131,10 @@ export default function DiffViewer({
     <div className="space-y-4">
       {/* Seed / Initial Template */}
       {seedNode && (
-        <div className="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden">
-          <div className="flex items-center gap-3 px-4 py-3 bg-slate-700/50">
-            <span className="font-bold text-white">{t('evolution.initialTemplate')}</span>
-            <span className="font-mono text-slate-400 text-sm">
+        <div className="bg-card border border-border rounded-lg overflow-hidden">
+          <div className="flex items-center gap-3 px-4 py-3 bg-muted">
+            <span className="font-bold text-foreground">{t('evolution.initialTemplate')}</span>
+            <span className="font-mono text-muted-foreground text-sm">
               {seedNode.candidateId.slice(0, 8)}
             </span>
             <span
@@ -155,14 +155,14 @@ export default function DiffViewer({
           <div className="px-4 py-3">
             <button
               onClick={() => setSeedExpanded(!seedExpanded)}
-              className="text-xs text-slate-400 hover:text-slate-200 mb-2"
+              className="text-xs text-muted-foreground hover:text-foreground mb-2"
             >
               {seedExpanded || defaultSeedExpanded
                 ? 'Collapse'
                 : `Expand (${seedLineCount} lines)`}
             </button>
             {(seedExpanded || defaultSeedExpanded) && (
-              <pre className="font-mono text-xs leading-relaxed text-slate-400 overflow-x-auto whitespace-pre-wrap">
+              <pre className="font-mono text-xs leading-relaxed text-muted-foreground overflow-x-auto whitespace-pre-wrap">
                 {seedTemplate}
               </pre>
             )}
@@ -178,17 +178,17 @@ export default function DiffViewer({
             {transitionMap.has(step.childId) && (
               <div className="flex items-center gap-2 px-4 py-2 text-xs text-purple-400 bg-purple-500/10 rounded-lg border border-purple-500/20">
                 <span>Migrated from Island {transitionMap.get(step.childId)!.fromIsland}</span>
-                <span className="text-slate-500">&rarr;</span>
+                <span className="text-muted-foreground">&rarr;</span>
                 <span>Island {transitionMap.get(step.childId)!.toIsland}</span>
               </div>
             )}
           <div
-            className="bg-slate-800 border border-slate-700 rounded-lg overflow-hidden"
+            className="bg-card border border-border rounded-lg overflow-hidden"
           >
             {/* Step header */}
-            <div className="flex items-center gap-3 px-4 py-3 bg-slate-700/50 flex-wrap">
-              <span className="font-bold text-white">{t('evolution.step', { number: i + 1 })}</span>
-              <span className="font-mono text-slate-400 text-sm">
+            <div className="flex items-center gap-3 px-4 py-3 bg-muted flex-wrap">
+              <span className="font-bold text-foreground">{t('evolution.step', { number: i + 1 })}</span>
+              <span className="font-mono text-muted-foreground text-sm">
                 {step.childId.slice(0, 8)}
               </span>
               <span
@@ -251,7 +251,7 @@ export default function DiffViewer({
                   )
                 }
                 return (
-                  <div key={j} data-diff-type="context" className="text-slate-500">
+                  <div key={j} data-diff-type="context" className="text-muted-foreground">
                     {' '}
                     {line.content}
                   </div>

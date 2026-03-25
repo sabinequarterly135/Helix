@@ -54,8 +54,8 @@ export default function FitnessChart({ data, isLive = false }: FitnessChartProps
   const fitnessDomain: [number, number] = [fitnessMin - fitnessPadding, fitnessMax + fitnessPadding]
 
   return (
-    <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
-      <h3 className="text-slate-200 font-semibold mb-4">{t('evolution.fitnessProgression')}</h3>
+    <div className="bg-card border border-border rounded-lg p-4">
+      <h3 className="text-foreground font-semibold mb-4">{t('evolution.fitnessProgression')}</h3>
       {cleanData.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-[400px] gap-3">
           {isLive ? (
@@ -65,12 +65,12 @@ export default function FitnessChart({ data, isLive = false }: FitnessChartProps
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-blue-500"></span>
                 </span>
-                <p className="text-slate-400">{t('evolution.evaluatingFirstGeneration')}</p>
+                <p className="text-muted-foreground">{t('evolution.evaluatingFirstGeneration')}</p>
               </div>
-              <p className="text-slate-600 text-xs">{t('evolution.evaluatingFirstGenerationHint')}</p>
+              <p className="text-muted-foreground text-xs">{t('evolution.evaluatingFirstGenerationHint')}</p>
             </>
           ) : (
-            <p className="text-slate-500">{t('evolution.noDataYet')}</p>
+            <p className="text-muted-foreground">{t('evolution.noDataYet')}</p>
           )}
         </div>
       ) : (

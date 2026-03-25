@@ -12,7 +12,7 @@ interface CaseResultsGridProps {
 const TIER_STYLES: Record<string, string> = {
   critical: 'bg-red-500/20 text-red-400',
   normal: 'bg-blue-500/20 text-blue-400',
-  low: 'bg-slate-500/20 text-slate-400',
+  low: 'bg-muted text-muted-foreground',
 }
 
 const TIER_PRIORITY: Record<string, number> = {
@@ -35,6 +35,8 @@ function PassIcon({ caseId }: { caseId: string }) {
       viewBox="0 0 24 24"
       strokeWidth={2}
       stroke="currentColor"
+      role="img"
+      aria-label="Passed"
     >
       <path
         strokeLinecap="round"
@@ -54,6 +56,8 @@ function FailIcon({ caseId }: { caseId: string }) {
       viewBox="0 0 24 24"
       strokeWidth={2}
       stroke="currentColor"
+      role="img"
+      aria-label="Failed"
     >
       <path
         strokeLinecap="round"
@@ -76,10 +80,10 @@ function DetailPanel({
     <div className="grid gap-4 p-4 md:grid-cols-2">
       {/* Expected */}
       <div>
-        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">
+        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {t('evolution.expected')}
         </p>
-        <pre className="max-h-48 overflow-auto rounded bg-slate-900/60 p-3 text-xs text-slate-300">
+        <pre className="max-h-48 overflow-auto rounded bg-muted p-3 text-xs text-foreground">
           {caseResult.expected
             ? JSON.stringify(caseResult.expected, null, 2)
             : '(none)'}
@@ -88,23 +92,23 @@ function DetailPanel({
 
       {/* Actual */}
       <div>
-        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">
+        <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           {t('evolution.actual')}
         </p>
         {caseResult.actualContent && (
-          <pre className="mb-2 max-h-48 overflow-auto rounded bg-slate-900/60 p-3 text-xs text-slate-300">
+          <pre className="mb-2 max-h-48 overflow-auto rounded bg-muted p-3 text-xs text-foreground">
             {caseResult.actualContent}
           </pre>
         )}
         {caseResult.actualToolCalls && caseResult.actualToolCalls.length > 0 && (
-          <pre className="max-h-48 overflow-auto rounded bg-slate-900/60 p-3 text-xs text-slate-300">
+          <pre className="max-h-48 overflow-auto rounded bg-muted p-3 text-xs text-foreground">
             {JSON.stringify(caseResult.actualToolCalls, null, 2)}
           </pre>
         )}
         {!caseResult.actualContent &&
           (!caseResult.actualToolCalls ||
             caseResult.actualToolCalls.length === 0) && (
-            <p className="text-xs text-slate-500">{t('evolution.noActualOutput')}</p>
+            <p className="text-xs text-muted-foreground">{t('evolution.noActualOutput')}</p>
           )}
       </div>
 
@@ -121,7 +125,7 @@ function DetailPanel({
                 Improved ({(caseResult.score - seedResult.score).toFixed(1)})
               </span>
             ) : caseResult.score === seedResult.score ? (
-              <span className="rounded-full bg-slate-500/20 px-2 py-0.5 text-xs font-semibold text-slate-400">
+              <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold text-muted-foreground">
                 No change
               </span>
             ) : (
@@ -132,8 +136,8 @@ function DetailPanel({
           </div>
           <div className="grid gap-3 md:grid-cols-2">
             {/* Seed column */}
-            <div className="rounded border border-slate-700/50 bg-slate-900/40 p-2">
-              <p className="mb-1 text-xs font-semibold text-slate-500">{t('evolution.seedOriginalPrompt')}</p>
+            <div className="rounded border border-border/50 bg-muted p-2">
+              <p className="mb-1 text-xs font-semibold text-muted-foreground">{t('evolution.seedOriginalPrompt')}</p>
               <div className="flex items-center gap-2">
                 <span className={`text-xs font-semibold ${seedResult.passed ? 'text-emerald-400' : 'text-red-400'}`}>
                   {seedResult.passed ? 'PASS' : 'FAIL'}
@@ -142,11 +146,11 @@ function DetailPanel({
                   {seedResult.score.toFixed(3)}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-slate-400">{seedResult.reason}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{seedResult.reason}</p>
             </div>
             {/* Evolved column */}
-            <div className="rounded border border-slate-700/50 bg-slate-900/40 p-2">
-              <p className="mb-1 text-xs font-semibold text-slate-500">{t('evolution.evolvedBestCandidate')}</p>
+            <div className="rounded border border-border/50 bg-muted p-2">
+              <p className="mb-1 text-xs font-semibold text-muted-foreground">{t('evolution.evolvedBestCandidate')}</p>
               <div className="flex items-center gap-2">
                 <span className={`text-xs font-semibold ${caseResult.passed ? 'text-emerald-400' : 'text-red-400'}`}>
                   {caseResult.passed ? 'PASS' : 'FAIL'}
@@ -155,7 +159,7 @@ function DetailPanel({
                   {caseResult.score.toFixed(3)}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-slate-400">{caseResult.reason}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{caseResult.reason}</p>
             </div>
           </div>
         </div>
@@ -164,7 +168,7 @@ function DetailPanel({
       {/* Behavior Criteria Breakdown */}
       {caseResult.criteriaResults && caseResult.criteriaResults.length > 0 && (
         <div className="md:col-span-2">
-          <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-slate-400">
+          <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             {t('datasets.personaBehaviorCriteria')}
           </p>
           <div className="space-y-1">
@@ -173,8 +177,8 @@ function DetailPanel({
                 <span className={cr.passed ? 'text-emerald-400' : 'text-red-400'}>
                   {cr.passed ? '\u2713' : '\u2717'}
                 </span>
-                <span className="text-slate-300 font-medium">{cr.criterion}:</span>
-                <span className="text-slate-400">{cr.reason}</span>
+                <span className="text-foreground font-medium">{cr.criterion}:</span>
+                <span className="text-muted-foreground">{cr.reason}</span>
               </div>
             ))}
           </div>
@@ -233,7 +237,7 @@ export default function CaseResultsGrid({
 
   if (caseResults.length === 0) {
     return (
-      <div className="rounded-lg border border-slate-700 bg-slate-800/50 p-8 text-center text-slate-400">
+      <div className="rounded-lg border border-border bg-card/50 p-8 text-center text-muted-foreground">
         {t('evolution.noCaseResults')}
       </div>
     )
@@ -242,15 +246,15 @@ export default function CaseResultsGrid({
   return (
     <div className="space-y-4">
       {/* Summary stats bar */}
-      <div className="rounded-lg border border-slate-700 bg-slate-800 p-4">
+      <div className="rounded-lg border border-border bg-card p-4">
         <div className="mb-2 flex items-center gap-4 text-sm">
-          <span className="text-slate-400">
+          <span className="text-muted-foreground">
             {t('evolution.totalCases', { count: caseResults.length })}
           </span>
           <span className="text-emerald-400">{t('evolution.passedCount', { count: passedCount })}</span>
           <span className="text-red-400">{t('evolution.failedCount', { count: failedCount })}</span>
         </div>
-        <div className="flex h-2 overflow-hidden rounded-full bg-slate-700">
+        <div className="flex h-2 overflow-hidden rounded-full bg-border">
           <div
             className="bg-emerald-500 transition-all"
             style={{ width: `${passRate}%` }}
@@ -263,23 +267,23 @@ export default function CaseResultsGrid({
       </div>
 
       {/* Table */}
-      <div className="overflow-hidden rounded-lg border border-slate-700 bg-slate-800">
+      <div className="overflow-hidden rounded-lg border border-border bg-card">
         <table className="w-full">
           <thead>
-            <tr className="bg-slate-700/50">
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-400">
+            <tr className="bg-muted">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 {t('evolution.caseId')}
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-400">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 {t('datasets.tier')}
               </th>
-              <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-slate-400">
+              <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 {t('evolution.result')}
               </th>
-              <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-slate-400">
+              <th className="px-4 py-3 text-right text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 {t('evolution.fitness')}
               </th>
-              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-slate-400">
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase tracking-wider text-muted-foreground">
                 {t('evolution.reason')}
               </th>
             </tr>
@@ -292,12 +296,21 @@ export default function CaseResultsGrid({
               return (
                 <Fragment key={c.caseId}>
                   <tr
+                    tabIndex={0}
+                    role="button"
+                    aria-expanded={isExpanded}
                     onClick={() => toggleExpand(c.caseId)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault()
+                        toggleExpand(c.caseId)
+                      }
+                    }}
                     className={`cursor-pointer ${
-                      idx % 2 === 0 ? 'bg-slate-800/50' : 'bg-slate-900/30'
-                    } hover:bg-slate-700/30`}
+                      idx % 2 === 0 ? 'bg-card/50' : 'bg-background/30'
+                    } hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background`}
                   >
-                    <td className="px-4 py-3 text-sm text-slate-300" title={c.caseId}>
+                    <td className="px-4 py-3 text-sm text-foreground" title={c.caseId}>
                       {caseNames?.get(c.caseId) ?? c.caseId}
                     </td>
                     <td className="px-4 py-3">
@@ -320,7 +333,7 @@ export default function CaseResultsGrid({
                     >
                       {c.score.toFixed(3)}
                     </td>
-                    <td className="px-4 py-3 text-sm text-slate-400" title={c.reason}>
+                    <td className="px-4 py-3 text-sm text-muted-foreground" title={c.reason}>
                       <span className={`mr-1 font-semibold ${c.passed ? 'text-emerald-400' : 'text-red-400'}`}>
                         {c.passed ? '[PASS]' : '[FAIL]'}
                       </span>
@@ -331,7 +344,7 @@ export default function CaseResultsGrid({
                     <tr>
                       <td
                         colSpan={5}
-                        className="border-t border-slate-700/50 bg-slate-900/40"
+                        className="border-t border-border/50 bg-muted"
                       >
                         <DetailPanel
                           caseResult={c}
