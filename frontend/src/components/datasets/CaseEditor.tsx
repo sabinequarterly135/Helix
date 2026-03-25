@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
-import { Card, CardContent } from '@/components/ui/card'
+
 
 interface CaseEditorProps {
   promptId: string
@@ -158,102 +158,130 @@ export function CaseEditor({ promptId, existingCase, open, onOpenChange }: CaseE
           </SheetDescription>
         </SheetHeader>
 
-        <div className="space-y-4 mt-6">
-          {/* Name */}
-          <div>
-            <label htmlFor="case-name" className="block text-sm text-muted-foreground mb-1">{t('datasets.name')}</label>
-            <Input
-              id="case-name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={t('datasets.testCaseName')}
-            />
-          </div>
-
-          {/* Description */}
-          <div>
-            <label htmlFor="case-description" className="block text-sm text-muted-foreground mb-1">{t('datasets.description')}</label>
-            <Textarea
-              id="case-description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              rows={2}
-              placeholder={t('datasets.optionalDescription')}
-            />
-          </div>
-
-          {/* Tier + Tags row */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="case-tier" className="block text-sm text-muted-foreground mb-1">{t('datasets.tier')}</label>
-              <Select value={tier} onValueChange={setTier}>
-                <SelectTrigger id="case-tier">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="critical">critical</SelectItem>
-                  <SelectItem value="normal">normal</SelectItem>
-                  <SelectItem value="low">low</SelectItem>
-                </SelectContent>
-              </Select>
+        <div className="space-y-5 mt-6">
+          {/* ── Section: Identity ── */}
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
+            <div className="px-4 py-2.5 border-b border-border">
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Identity</h3>
             </div>
-            <div>
-              <label htmlFor="case-tags" className="block text-sm text-muted-foreground mb-1">{t('datasets.tagsCommaSeparated')}</label>
-              <Input
-                id="case-tags"
-                value={tags}
-                onChange={(e) => setTags(e.target.value)}
-                placeholder="tag1, tag2"
-              />
+            <div className="p-4 space-y-3">
+              <div>
+                <label htmlFor="case-name" className="block text-sm font-medium text-foreground mb-1">{t('datasets.name')}</label>
+                <Input
+                  id="case-name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder={t('datasets.testCaseName')}
+                />
+              </div>
+              <div>
+                <label htmlFor="case-description" className="block text-sm font-medium text-foreground mb-1">{t('datasets.description')}</label>
+                <Textarea
+                  id="case-description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={2}
+                  placeholder={t('datasets.optionalDescription')}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label htmlFor="case-tier" className="block text-sm font-medium text-foreground mb-1">{t('datasets.tier')}</label>
+                  <Select value={tier} onValueChange={setTier}>
+                    <SelectTrigger id="case-tier">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="critical">critical</SelectItem>
+                      <SelectItem value="normal">normal</SelectItem>
+                      <SelectItem value="low">low</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label htmlFor="case-tags" className="block text-sm font-medium text-foreground mb-1">{t('datasets.tagsCommaSeparated')}</label>
+                  <Input
+                    id="case-tags"
+                    value={tags}
+                    onChange={(e) => setTags(e.target.value)}
+                    placeholder="tag1, tag2"
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Variables JSON */}
-          <div>
-            <label htmlFor="case-variables" className="block text-sm text-muted-foreground mb-1">{t('datasets.variablesJson')}</label>
-            <Textarea
-              id="case-variables"
-              value={variables}
-              onChange={(e) => setVariables(e.target.value)}
-              rows={3}
-              className="font-mono"
-              placeholder='{"key": "value"}'
-            />
+          {/* ── Section: Input ── */}
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
+            <div className="px-4 py-2.5 border-b border-border">
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Input</h3>
+            </div>
+            <div className="p-4 space-y-3">
+              <div>
+                <label htmlFor="case-variables" className="block text-sm font-medium text-foreground mb-1">{t('datasets.variablesJson')}</label>
+                <Textarea
+                  id="case-variables"
+                  value={variables}
+                  onChange={(e) => setVariables(e.target.value)}
+                  rows={3}
+                  className="font-mono text-xs"
+                  placeholder='{"key": "value"}'
+                />
+              </div>
+              <div>
+                <label htmlFor="case-chat-history" className="block text-sm font-medium text-foreground mb-1">{t('datasets.chatHistoryJson')}</label>
+                <Textarea
+                  id="case-chat-history"
+                  value={chatHistory}
+                  onChange={(e) => setChatHistory(e.target.value)}
+                  rows={3}
+                  className="font-mono text-xs"
+                  placeholder='[{"role": "user", "content": "Hello"}]'
+                />
+              </div>
+            </div>
           </div>
 
-          {/* Behavior Criteria */}
-          <div>
-            <label htmlFor="case-behavior" className="block text-sm text-muted-foreground mb-1">
-              {t('datasets.behaviorCriteria')}
-            </label>
-            <Textarea
-              id="case-behavior"
-              value={behaviorCriteria}
-              onChange={(e) => setBehaviorCriteria(e.target.value)}
-              rows={3}
-              placeholder={"greets warmly in Spanish\nconfirms department before transfer\ntransfers to correct department"}
-            />
+          {/* ── Section: Expected Behavior ── */}
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
+            <div className="px-4 py-2.5 border-b border-border">
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Expected Behavior</h3>
+            </div>
+            <div className="p-4 space-y-3">
+              <div>
+                <label htmlFor="case-behavior" className="block text-sm font-medium text-foreground mb-1">
+                  {t('datasets.behaviorCriteria')}
+                </label>
+                <Textarea
+                  id="case-behavior"
+                  value={behaviorCriteria}
+                  onChange={(e) => setBehaviorCriteria(e.target.value)}
+                  rows={3}
+                  placeholder={"greets warmly in Spanish\nconfirms department before transfer\ntransfers to correct department"}
+                />
+              </div>
+              <div>
+                <label htmlFor="case-expected-output" className="block text-sm font-medium text-foreground mb-1">{t('datasets.expectedOutputJson')}</label>
+                <Textarea
+                  id="case-expected-output"
+                  value={expectedOutput}
+                  onChange={(e) => setExpectedOutput(e.target.value)}
+                  rows={3}
+                  className="font-mono text-xs"
+                  placeholder='{"tool_name": "transfer_call", "tool_args": {"destination": "sales"}}'
+                />
+              </div>
+            </div>
           </div>
 
-          {/* Expected Output JSON */}
-          <div>
-            <label htmlFor="case-expected-output" className="block text-sm text-muted-foreground mb-1">{t('datasets.expectedOutputJson')}</label>
-            <Textarea
-              id="case-expected-output"
-              value={expectedOutput}
-              onChange={(e) => setExpectedOutput(e.target.value)}
-              rows={3}
-              className="font-mono"
-              placeholder='{"tool_name": "transfer_call", "tool_args": {"destination": "sales"}}'
-            />
-          </div>
-
-          {/* Scorer Flags */}
-          <Card>
-            <CardContent className="pt-4 space-y-3">
-              <p className="text-sm font-medium text-foreground">{t('datasets.scorerFlags')}</p>
+          {/* ── Section: Scoring ── */}
+          <div className="rounded-lg border border-border bg-card overflow-hidden">
+            <div className="px-4 py-2.5 border-b border-border">
+              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{t('datasets.scorerFlags')}</h3>
+            </div>
+            <div className="p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <label htmlFor="case-require-content" className="text-sm text-muted-foreground">
+                <label htmlFor="case-require-content" className="text-sm text-foreground">
                   {t('datasets.requireContent')}
                 </label>
                 <Switch
@@ -263,7 +291,7 @@ export function CaseEditor({ promptId, existingCase, open, onOpenChange }: CaseE
                 />
               </div>
               <div className="flex items-center justify-between">
-                <label htmlFor="case-match-args" className="text-sm text-muted-foreground">{t('datasets.argumentMatchingMode')}</label>
+                <label htmlFor="case-match-args" className="text-sm text-foreground">{t('datasets.argumentMatchingMode')}</label>
                 <Select value={matchArgs} onValueChange={setMatchArgs}>
                   <SelectTrigger id="case-match-args" className="w-[120px]">
                     <SelectValue />
@@ -274,20 +302,7 @@ export function CaseEditor({ promptId, existingCase, open, onOpenChange }: CaseE
                   </SelectContent>
                 </Select>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Chat History JSON */}
-          <div>
-            <label htmlFor="case-chat-history" className="block text-sm text-muted-foreground mb-1">{t('datasets.chatHistoryJson')}</label>
-            <Textarea
-              id="case-chat-history"
-              value={chatHistory}
-              onChange={(e) => setChatHistory(e.target.value)}
-              rows={3}
-              className="font-mono"
-              placeholder='[{"role": "user", "content": "Hello"}]'
-            />
+            </div>
           </div>
 
           {/* Error display */}
