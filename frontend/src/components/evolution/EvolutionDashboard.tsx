@@ -81,11 +81,11 @@ function OverviewContent({
       <SummaryCards data={state.summary} />
 
       {/* Charts row */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-stretch">
         <div className="lg:col-span-3">
           <FitnessChart data={state.generations} isLive={state.status === 'running'} />
         </div>
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 flex">
           <IslandsSummary
             candidates={state.candidates}
             migrations={state.migrations}
