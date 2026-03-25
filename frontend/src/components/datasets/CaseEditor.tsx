@@ -150,7 +150,7 @@ export function CaseEditor({ promptId, existingCase, open, onOpenChange }: CaseE
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-[600px] sm:max-w-[600px] overflow-y-auto">
+      <SheetContent side="right" className="w-full sm:w-[600px] sm:max-w-[600px] overflow-y-auto">
         <SheetHeader>
           <SheetTitle>{isEdit ? t('datasets.editTestCase') : t('datasets.addTestCaseTitle')}</SheetTitle>
           <SheetDescription>
@@ -161,8 +161,9 @@ export function CaseEditor({ promptId, existingCase, open, onOpenChange }: CaseE
         <div className="space-y-4 mt-6">
           {/* Name */}
           <div>
-            <label className="block text-sm text-muted-foreground mb-1">{t('datasets.name')}</label>
+            <label htmlFor="case-name" className="block text-sm text-muted-foreground mb-1">{t('datasets.name')}</label>
             <Input
+              id="case-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t('datasets.testCaseName')}
@@ -171,8 +172,9 @@ export function CaseEditor({ promptId, existingCase, open, onOpenChange }: CaseE
 
           {/* Description */}
           <div>
-            <label className="block text-sm text-muted-foreground mb-1">{t('datasets.description')}</label>
+            <label htmlFor="case-description" className="block text-sm text-muted-foreground mb-1">{t('datasets.description')}</label>
             <Textarea
+              id="case-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
@@ -183,9 +185,9 @@ export function CaseEditor({ promptId, existingCase, open, onOpenChange }: CaseE
           {/* Tier + Tags row */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-muted-foreground mb-1">{t('datasets.tier')}</label>
+              <label htmlFor="case-tier" className="block text-sm text-muted-foreground mb-1">{t('datasets.tier')}</label>
               <Select value={tier} onValueChange={setTier}>
-                <SelectTrigger>
+                <SelectTrigger id="case-tier">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -196,8 +198,9 @@ export function CaseEditor({ promptId, existingCase, open, onOpenChange }: CaseE
               </Select>
             </div>
             <div>
-              <label className="block text-sm text-muted-foreground mb-1">{t('datasets.tagsCommaSeparated')}</label>
+              <label htmlFor="case-tags" className="block text-sm text-muted-foreground mb-1">{t('datasets.tagsCommaSeparated')}</label>
               <Input
+                id="case-tags"
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
                 placeholder="tag1, tag2"
@@ -207,8 +210,9 @@ export function CaseEditor({ promptId, existingCase, open, onOpenChange }: CaseE
 
           {/* Variables JSON */}
           <div>
-            <label className="block text-sm text-muted-foreground mb-1">{t('datasets.variablesJson')}</label>
+            <label htmlFor="case-variables" className="block text-sm text-muted-foreground mb-1">{t('datasets.variablesJson')}</label>
             <Textarea
+              id="case-variables"
               value={variables}
               onChange={(e) => setVariables(e.target.value)}
               rows={3}
@@ -219,10 +223,11 @@ export function CaseEditor({ promptId, existingCase, open, onOpenChange }: CaseE
 
           {/* Behavior Criteria */}
           <div>
-            <label className="block text-sm text-muted-foreground mb-1">
+            <label htmlFor="case-behavior" className="block text-sm text-muted-foreground mb-1">
               {t('datasets.behaviorCriteria')}
             </label>
             <Textarea
+              id="case-behavior"
               value={behaviorCriteria}
               onChange={(e) => setBehaviorCriteria(e.target.value)}
               rows={3}
@@ -232,8 +237,9 @@ export function CaseEditor({ promptId, existingCase, open, onOpenChange }: CaseE
 
           {/* Expected Output JSON */}
           <div>
-            <label className="block text-sm text-muted-foreground mb-1">{t('datasets.expectedOutputJson')}</label>
+            <label htmlFor="case-expected-output" className="block text-sm text-muted-foreground mb-1">{t('datasets.expectedOutputJson')}</label>
             <Textarea
+              id="case-expected-output"
               value={expectedOutput}
               onChange={(e) => setExpectedOutput(e.target.value)}
               rows={3}
@@ -247,18 +253,19 @@ export function CaseEditor({ promptId, existingCase, open, onOpenChange }: CaseE
             <CardContent className="pt-4 space-y-3">
               <p className="text-sm font-medium text-foreground">{t('datasets.scorerFlags')}</p>
               <div className="flex items-center justify-between">
-                <label className="text-sm text-muted-foreground">
+                <label htmlFor="case-require-content" className="text-sm text-muted-foreground">
                   {t('datasets.requireContent')}
                 </label>
                 <Switch
+                  id="case-require-content"
                   checked={requireContent}
                   onCheckedChange={setRequireContent}
                 />
               </div>
               <div className="flex items-center justify-between">
-                <label className="text-sm text-muted-foreground">{t('datasets.argumentMatchingMode')}</label>
+                <label htmlFor="case-match-args" className="text-sm text-muted-foreground">{t('datasets.argumentMatchingMode')}</label>
                 <Select value={matchArgs} onValueChange={setMatchArgs}>
-                  <SelectTrigger className="w-[120px]">
+                  <SelectTrigger id="case-match-args" className="w-[120px]">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -272,8 +279,9 @@ export function CaseEditor({ promptId, existingCase, open, onOpenChange }: CaseE
 
           {/* Chat History JSON */}
           <div>
-            <label className="block text-sm text-muted-foreground mb-1">{t('datasets.chatHistoryJson')}</label>
+            <label htmlFor="case-chat-history" className="block text-sm text-muted-foreground mb-1">{t('datasets.chatHistoryJson')}</label>
             <Textarea
+              id="case-chat-history"
               value={chatHistory}
               onChange={(e) => setChatHistory(e.target.value)}
               rows={3}

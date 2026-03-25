@@ -31,9 +31,9 @@ export default function VersionDiffViewer({
   }, [fromTemplate, toTemplate, fromLabel, toLabel])
 
   return (
-    <div className="rounded-lg border border-slate-700 bg-slate-800/50 overflow-hidden">
+    <div className="rounded-lg border border-border bg-card/50 overflow-hidden">
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 bg-slate-700/50">
+      <div className="flex items-center gap-3 px-4 py-3 bg-muted">
         <span className="font-semibold text-foreground text-sm">
           {fromLabel} &rarr; {toLabel}
         </span>
@@ -82,7 +82,7 @@ export default function VersionDiffViewer({
                 )
               }
               return (
-                <div key={i} data-diff-type="context" className="text-slate-500">
+                <div key={i} data-diff-type="context" className="text-muted-foreground">
                   {' '}
                   {line.content}
                 </div>

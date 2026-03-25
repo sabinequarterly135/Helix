@@ -30,7 +30,7 @@ function DiffLineRow({ line }: { line: DiffLine }) {
       </div>
     )
   }
-  return <div className="text-slate-500"> {line.content}</div>
+  return <div className="text-muted-foreground"> {line.content}</div>
 }
 
 export function DiffPopover({
@@ -64,10 +64,10 @@ export function DiffPopover({
   if (!candidate || candidate.template === undefined) {
     return (
       <div
-        className="absolute pointer-events-none w-[400px] h-[300px] bg-slate-900 border border-slate-600 rounded-lg shadow-xl z-30 flex items-center justify-center"
+        className="absolute pointer-events-none w-[400px] h-[300px] bg-background border border-border rounded-lg shadow-xl z-30 flex items-center justify-center"
         style={{ left: `${left}px`, top: `${top}px` }}
       >
-        <p className="text-slate-400 text-sm">{t('evolution.noTemplateData')}</p>
+        <p className="text-muted-foreground text-sm">{t('evolution.noTemplateData')}</p>
       </div>
     )
   }
@@ -76,11 +76,11 @@ export function DiffPopover({
   if (diffResult?.type === 'seed') {
     return (
       <div
-        className="absolute pointer-events-none w-[400px] h-[300px] bg-slate-900 border border-slate-600 rounded-lg shadow-xl z-30 flex flex-col overflow-hidden"
+        className="absolute pointer-events-none w-[400px] h-[300px] bg-background border border-border rounded-lg shadow-xl z-30 flex flex-col overflow-hidden"
         style={{ left: `${left}px`, top: `${top}px` }}
       >
-        <div className="flex items-center gap-2 px-3 py-2 bg-slate-700/50 border-b border-slate-600 shrink-0">
-          <span className="font-mono text-slate-200 text-xs font-bold">
+        <div className="flex items-center gap-2 px-3 py-2 bg-muted border-b border-border shrink-0">
+          <span className="font-mono text-foreground text-xs font-bold">
             {candidate.candidateId}
           </span>
           <span
@@ -98,7 +98,7 @@ export function DiffPopover({
           </span>
         </div>
         <div className="overflow-y-auto max-h-[260px] px-3 py-2">
-          <pre className="font-mono text-xs leading-relaxed text-slate-300 whitespace-pre-wrap">
+          <pre className="font-mono text-xs leading-relaxed text-foreground whitespace-pre-wrap">
             {candidate.template}
           </pre>
         </div>
@@ -110,10 +110,10 @@ export function DiffPopover({
   if (diffResult?.type === 'no-parent' || diffResult?.type === 'no-parent-template') {
     return (
       <div
-        className="absolute pointer-events-none w-[400px] h-[300px] bg-slate-900 border border-slate-600 rounded-lg shadow-xl z-30 flex items-center justify-center"
+        className="absolute pointer-events-none w-[400px] h-[300px] bg-background border border-border rounded-lg shadow-xl z-30 flex items-center justify-center"
         style={{ left: `${left}px`, top: `${top}px` }}
       >
-        <p className="text-slate-400 text-sm">{t('evolution.parentTemplateNotAvailable')}</p>
+        <p className="text-muted-foreground text-sm">{t('evolution.parentTemplateNotAvailable')}</p>
       </div>
     )
   }
@@ -126,12 +126,12 @@ export function DiffPopover({
 
     return (
       <div
-        className="absolute pointer-events-none w-[400px] h-[300px] bg-slate-900 border border-slate-600 rounded-lg shadow-xl z-30 flex flex-col overflow-hidden"
+        className="absolute pointer-events-none w-[400px] h-[300px] bg-background border border-border rounded-lg shadow-xl z-30 flex flex-col overflow-hidden"
         style={{ left: `${left}px`, top: `${top}px` }}
       >
         {/* Header */}
-        <div className="flex items-center gap-2 px-3 py-2 bg-slate-700/50 border-b border-slate-600 shrink-0">
-          <span className="font-mono text-slate-200 text-xs font-bold">
+        <div className="flex items-center gap-2 px-3 py-2 bg-muted border-b border-border shrink-0">
+          <span className="font-mono text-foreground text-xs font-bold">
             {candidate.candidateId.slice(0, 8)}
           </span>
           <span
@@ -148,7 +148,7 @@ export function DiffPopover({
             {candidate.fitnessScore.toFixed(3)}
           </span>
           {(addCount > 0 || delCount > 0) && (
-            <span className="text-xs text-slate-400 ml-auto font-mono">
+            <span className="text-xs text-muted-foreground ml-auto font-mono">
               +{addCount} -{delCount}
             </span>
           )}

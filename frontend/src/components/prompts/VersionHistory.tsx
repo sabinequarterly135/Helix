@@ -115,7 +115,7 @@ export default function VersionHistory({ promptId }: VersionHistoryProps) {
       {versions.map((ver) => (
         <div
           key={ver.version}
-          className="rounded-lg border border-slate-700 bg-slate-800/50 overflow-hidden"
+          className="rounded-lg border border-border bg-card/50 overflow-hidden"
         >
           {/* Version row header */}
           <div className="flex items-center gap-3 px-4 py-3">
@@ -125,7 +125,7 @@ export default function VersionHistory({ promptId }: VersionHistoryProps) {
                 type="checkbox"
                 checked={selectedForDiff.has(ver.version)}
                 onChange={() => toggleDiffSelection(ver.version)}
-                className="h-4 w-4 rounded border-slate-600 bg-slate-700 text-emerald-500 focus:ring-emerald-500/50"
+                className="h-4 w-4 rounded border-border bg-secondary text-emerald-500 focus:ring-emerald-500/50"
                 title="Select for diff comparison"
               />
             )}
@@ -173,8 +173,8 @@ export default function VersionHistory({ promptId }: VersionHistoryProps) {
 
           {/* Expanded template view */}
           {expandedVersion === ver.version && (
-            <div className="border-t border-slate-700 px-4 py-3">
-              <pre className="font-mono text-xs leading-relaxed text-slate-400 overflow-x-auto whitespace-pre-wrap max-h-96 overflow-y-auto">
+            <div className="border-t border-border px-4 py-3">
+              <pre className="font-mono text-xs leading-relaxed text-muted-foreground overflow-x-auto whitespace-pre-wrap max-h-96 overflow-y-auto">
                 {ver.template}
               </pre>
             </div>

@@ -230,8 +230,8 @@ export default function IslandsView({ candidates, migrations, islandCount, statu
   const isEmpty = candidates.length === 0 && islandCount === 0
 
   return (
-    <div className="bg-slate-800 border border-slate-700 rounded-lg p-4">
-      <h3 className="text-sm font-medium text-slate-300 mb-3">{t('evolution.islands')}</h3>
+    <div className="bg-card border border-border rounded-lg p-4">
+      <h3 className="text-sm font-medium text-foreground mb-3">{t('evolution.islands')}</h3>
 
       {isEmpty ? (
         <div className="flex items-center justify-center min-h-[400px]">
@@ -374,7 +374,7 @@ export default function IslandsView({ candidates, migrations, islandCount, statu
           {/* Tooltip overlay */}
           {tooltip && (
             <div
-              className="absolute pointer-events-none bg-slate-900 text-slate-200 text-xs px-2 py-1 rounded border border-slate-600 whitespace-nowrap"
+              className="absolute pointer-events-none bg-background text-foreground text-xs px-2 py-1 rounded border border-border whitespace-nowrap"
               style={{ left: tooltip.x, top: tooltip.y, transform: 'translateX(-50%)' }}
             >
               {tooltip.text}
@@ -403,17 +403,12 @@ export default function IslandsView({ candidates, migrations, islandCount, statu
 
           {/* Status-based migration display for tests (always shows if migrations exist) */}
           {migrations.length > 0 && !recentMigration && (
-            <div className="text-xs text-slate-500 mt-1">
+            <div className="text-xs text-muted-foreground mt-1">
               {migrations.length} migration{migrations.length !== 1 ? 's' : ''} recorded
             </div>
           )}
 
-          {/* CSS for dash animation */}
-          <style>{`
-            @keyframes dash {
-              to { stroke-dashoffset: -20; }
-            }
-          `}</style>
+
         </div>
       )}
     </div>

@@ -345,7 +345,7 @@ function RegularNode({
 function NodeTooltip({ node }: { node: SimNode3D }) {
   return (
     <Html distanceFactor={10} style={{ pointerEvents: 'none' }}>
-      <div className="bg-slate-900 text-slate-200 text-xs px-3 py-2 rounded border border-slate-600 whitespace-nowrap">
+      <div className="bg-background text-foreground text-xs px-3 py-2 rounded border border-border whitespace-nowrap">
         <div className="font-mono font-bold">{node.id.slice(0, 8)}</div>
         <div>Fitness: {node.fitnessScore.toFixed(3)}</div>
         <div>Gen: {node.generation} | Island: {node.island}</div>
@@ -543,9 +543,9 @@ function Lineage3DScene({
   const lowDetail = edges.length > HELIX_DETAIL_THRESHOLD
 
   return (
-    <div ref={containerRef} className="bg-slate-800 border border-slate-700 rounded-lg p-4 h-[500px] relative">
+    <div ref={containerRef} className="bg-card border border-border rounded-lg p-4 h-[500px] relative">
       {/* Mutation type legend overlay */}
-      <div className="absolute top-3 right-3 z-10 bg-slate-900/80 border border-slate-700 rounded px-3 py-2 text-xs text-slate-300">
+      <div className="absolute top-3 right-3 z-10 bg-background/80 border border-border rounded px-3 py-2 text-xs text-foreground">
         {Object.entries(MUTATION_COLORS).map(([type, color]) => (
           <div key={type} className="flex items-center gap-2 py-0.5">
             <span
@@ -679,8 +679,8 @@ export default function Lineage3D({
 }: Lineage3DProps) {
   if (!isWebGLAvailable()) {
     return (
-      <div className="flex items-center justify-center h-[500px] bg-slate-800 border border-slate-700 rounded-lg">
-        <p className="text-slate-400">
+      <div className="flex items-center justify-center h-[500px] bg-card border border-border rounded-lg">
+        <p className="text-muted-foreground">
           WebGL is not supported in your browser. Use the 2D view instead.
         </p>
       </div>
@@ -689,8 +689,8 @@ export default function Lineage3D({
 
   if (lineageEvents.length === 0) {
     return (
-      <div className="flex items-center justify-center h-[500px] bg-slate-800 border border-slate-700 rounded-lg">
-        <p className="text-slate-400">No lineage data</p>
+      <div className="flex items-center justify-center h-[500px] bg-card border border-border rounded-lg">
+        <p className="text-muted-foreground">No lineage data</p>
       </div>
     )
   }

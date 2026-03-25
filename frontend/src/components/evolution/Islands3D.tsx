@@ -28,8 +28,8 @@ interface CanvasErrorBoundaryState { hasError: boolean }
 function CanvasRenderErrorFallback() {
   const { t } = useTranslation()
   return (
-    <div className="flex items-center justify-center h-[500px] bg-slate-800 border border-slate-700 rounded-lg">
-      <p className="text-slate-400">{t('evolution.webglRequired')}</p>
+    <div className="flex items-center justify-center h-[500px] bg-card border border-border rounded-lg">
+      <p className="text-muted-foreground">{t('evolution.webglRequired')}</p>
     </div>
   )
 }
@@ -149,7 +149,7 @@ function IslandSphere({ layout }: { layout: IslandLayout }) {
         />
       </mesh>
       <Html position={[0, ISLAND_RADIUS + 0.3, 0]} center>
-        <div className="text-xs text-slate-400 whitespace-nowrap select-none pointer-events-none">
+        <div className="text-xs text-muted-foreground whitespace-nowrap select-none pointer-events-none">
           Island {layout.index}
         </div>
       </Html>
@@ -744,10 +744,10 @@ function Islands3DScene({
   const isEmpty = candidates.length === 0 && islandCount === 0
 
   return (
-    <div ref={containerRef} className="bg-slate-800 border border-slate-700 rounded-lg p-4 h-[500px] relative">
+    <div ref={containerRef} className="bg-card border border-border rounded-lg p-4 h-[500px] relative">
       {isEmpty && (
         <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-          <p className="text-slate-400">{t('evolution.noIslandDataToDisplay')}</p>
+          <p className="text-muted-foreground">{t('evolution.noIslandDataToDisplay')}</p>
         </div>
       )}
       <Canvas camera={{ position: [0, 0, 15], fov: 50 }}>
@@ -834,8 +834,8 @@ export default function Islands3D({
 }: Islands3DProps) {
   if (!isWebGLAvailable()) {
     return (
-      <div className="flex items-center justify-center h-[500px] bg-slate-800 border border-slate-700 rounded-lg">
-        <p className="text-slate-400">
+      <div className="flex items-center justify-center h-[500px] bg-card border border-border rounded-lg">
+        <p className="text-muted-foreground">
           WebGL is not supported in your browser. Use the 2D view instead.
         </p>
       </div>

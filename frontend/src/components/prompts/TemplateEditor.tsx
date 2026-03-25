@@ -76,7 +76,7 @@ export default function TemplateEditor({ promptId, initialTemplate, onSaved }: T
         </button>
         <button
           onClick={handleCancel}
-          className="inline-flex items-center rounded-md bg-slate-700 px-4 py-2 text-sm font-medium text-slate-200 hover:bg-slate-600 transition-colors"
+          className="inline-flex items-center rounded-md bg-secondary px-4 py-2 text-sm font-medium text-secondary-foreground hover:bg-secondary/80 transition-colors"
         >
           {t('common.cancel')}
         </button>

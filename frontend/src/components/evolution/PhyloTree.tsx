@@ -251,17 +251,17 @@ export default function PhyloTree({ lineageEvents, bestCandidateId }: PhyloTreeP
 
   if (lineageEvents.length === 0) {
     return (
-      <div className="rounded-lg border border-slate-700 bg-slate-800/50 p-8 text-center">
+      <div className="rounded-lg border border-border bg-card/50 p-8 text-center">
         <p style={{ color: COLORS.textMuted }}>No lineage data</p>
       </div>
     )
   }
 
   return (
-    <div ref={containerRef} className="rounded-lg border border-slate-700 bg-slate-800/50 relative overflow-hidden">
+    <div ref={containerRef} className="rounded-lg border border-border bg-card/50 relative overflow-hidden">
       {/* Mutation Legend */}
-      <div className="absolute top-3 right-3 z-10 bg-slate-900/90 border border-slate-700 rounded-lg p-3">
-        <p className="text-xs font-medium text-slate-400 mb-2">Mutation Types</p>
+      <div className="absolute top-3 right-3 z-10 bg-background/90 border border-border rounded-lg p-3">
+        <p className="text-xs font-medium text-muted-foreground mb-2">Mutation Types</p>
         <div className="flex flex-col gap-1">
           {Object.entries(MUTATION_COLORS).map(([type, color]) => (
             <div key={type} className="flex items-center gap-2">
@@ -269,7 +269,7 @@ export default function PhyloTree({ lineageEvents, bestCandidateId }: PhyloTreeP
                 className="w-3 h-3 rounded-full inline-block"
                 style={{ backgroundColor: color }}
               />
-              <span className="text-xs text-slate-300">{type}</span>
+              <span className="text-xs text-foreground">{type}</span>
             </div>
           ))}
         </div>
@@ -400,7 +400,7 @@ export default function PhyloTree({ lineageEvents, bestCandidateId }: PhyloTreeP
       {/* Tooltip */}
       {tooltip && (
         <div
-          className="absolute pointer-events-none bg-slate-900 text-slate-200 text-xs px-3 py-2 rounded border border-slate-600 whitespace-nowrap z-20"
+          className="absolute pointer-events-none bg-background text-foreground text-xs px-3 py-2 rounded border border-border whitespace-nowrap z-20"
           style={{
             left: tooltip.x,
             top: tooltip.y,
@@ -438,21 +438,21 @@ export default function PhyloTree({ lineageEvents, bestCandidateId }: PhyloTreeP
         <button
           aria-label="Zoom in"
           onClick={handleZoomIn}
-          className="w-9 h-9 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 text-lg font-bold flex items-center justify-center border border-slate-600"
+          className="w-9 h-9 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground text-lg font-bold flex items-center justify-center border border-border"
         >
           +
         </button>
         <button
           aria-label="Zoom out"
           onClick={handleZoomOut}
-          className="w-9 h-9 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 text-lg font-bold flex items-center justify-center border border-slate-600"
+          className="w-9 h-9 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground text-lg font-bold flex items-center justify-center border border-border"
         >
           -
         </button>
         <button
           aria-label="Reset zoom"
           onClick={handleZoomReset}
-          className="w-9 h-9 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-medium flex items-center justify-center border border-slate-600"
+          className="w-9 h-9 rounded-lg bg-secondary hover:bg-secondary/80 text-foreground text-xs font-medium flex items-center justify-center border border-border"
         >
           1:1
         </button>
