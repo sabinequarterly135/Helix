@@ -180,9 +180,7 @@ describe('EvolutionDashboard transition', () => {
 
     // Segmented button group should be rendered with expected buttons
     expect(screen.getByText('Overview')).toBeInTheDocument()
-    expect(screen.getByText('Prompt Diffs')).toBeInTheDocument()
-    expect(screen.getByText('Mutation Stats')).toBeInTheDocument()
-    expect(screen.getByText('Case Results')).toBeInTheDocument()
+    expect(screen.getByText('Winning Path')).toBeInTheDocument()
   })
 
   it('derives historicalSummary from results when WS has no events', () => {

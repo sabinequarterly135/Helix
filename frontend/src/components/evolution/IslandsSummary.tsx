@@ -90,11 +90,11 @@ export default function IslandsSummary({ candidates, migrations, islandCount, st
         {islands.map((island) => (
           <div
             key={island.island}
-            className="rounded-md border border-border/60 bg-background/50 px-3 py-2.5 space-y-1.5"
+            className="rounded-md border border-border/60 bg-background/50 px-3 py-3 space-y-2"
           >
             {/* Island header */}
             <div className="flex items-center justify-between">
-              <span className="text-xs font-medium text-muted-foreground">
+              <span className="text-xs font-semibold text-foreground">
                 Island {island.island}
               </span>
               <span className="text-xs text-muted-foreground">
@@ -104,43 +104,56 @@ export default function IslandsSummary({ candidates, migrations, islandCount, st
 
             {island.candidateCount > 0 ? (
               <>
-                {/* Best fitness */}
-                <div className="flex items-baseline gap-2">
-                  <span
-                    className="text-lg font-bold tabular-nums"
-                    style={{ color: scoreColor(island.bestFitness) }}
-                  >
-                    {island.bestFitness.toFixed(2)}
-                  </span>
-                  {island.improvement != null && island.improvement > 0 && (
-                    <span className="text-xs text-emerald-500 font-medium">
-                      +{island.improvement.toFixed(1)}
+                {/* Best fitness — hero number */}
+                <div>
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground">Best fitness</span>
+                  <div className="flex items-baseline gap-2">
+                    <span
+                      className="text-xl font-bold tabular-nums"
+                      style={{ color: scoreColor(island.bestFitness) }}
+                    >
+                      {island.bestFitness.toFixed(2)}
                     </span>
-                  )}
+                    {island.improvement != null && island.improvement > 0 && (
+                      <span className="text-xs text-emerald-500 font-semibold">
+                        +{island.improvement.toFixed(1)}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
-                {/* Avg fitness */}
-                <div className="text-xs text-muted-foreground">
-                  avg {island.avgFitness.toFixed(2)}
+                {/* Avg + rejected row */}
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>Avg {island.avgFitness.toFixed(2)}</span>
                   {island.rejectedCount > 0 && (
-                    <span className="ml-2 text-destructive/70">
+                    <span className="text-destructive/70">
                       {island.rejectedCount} rejected
                     </span>
                   )}
                 </div>
 
-                {/* Mutation breakdown bar */}
-                <div className="flex h-1.5 rounded-full overflow-hidden bg-border/30">
-                  {Array.from(island.mutationBreakdown.entries()).map(([type, count]) => (
-                    <div
-                      key={type}
-                      title={`${type}: ${count}`}
-                      style={{
-                        width: `${(count / island.candidateCount) * 100}%`,
-                        backgroundColor: MUTATION_COLORS[type] ?? '#64748b',
-                      }}
-                    />
-                  ))}
+                {/* Mutation breakdown bar + labels */}
+                <div className="space-y-1">
+                  <div className="flex h-2 rounded-full overflow-hidden bg-border/30">
+                    {Array.from(island.mutationBreakdown.entries()).map(([type, count]) => (
+                      <div
+                        key={type}
+                        title={`${type}: ${count}`}
+                        style={{
+                          width: `${(count / island.candidateCount) * 100}%`,
+                          backgroundColor: MUTATION_COLORS[type] ?? '#64748b',
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-x-2 gap-y-0.5">
+                    {Array.from(island.mutationBreakdown.entries()).map(([type, count]) => (
+                      <span key={type} className="inline-flex items-center gap-1 text-[10px] text-muted-foreground">
+                        <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ backgroundColor: MUTATION_COLORS[type] ?? '#64748b' }} />
+                        {type.replace('_', ' ')} {count}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </>
             ) : (

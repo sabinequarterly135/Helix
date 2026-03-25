@@ -14,12 +14,10 @@ import SummaryCards from './SummaryCards'
 import GenerationTable from './GenerationTable'
 import IslandsSummary from './IslandsSummary'
 import DiffViewer from './DiffViewer'
-import MutationStats from './MutationStats'
 import CaseResultsGrid from './CaseResultsGrid'
 import HyperparameterDisplay from './HyperparameterDisplay'
 import LineageGraph from './LineageGraph'
-
-const Islands3D = lazy(() => import('./Islands3D'))
+import type { CaseResultData } from '../../types/evolution'
 
 interface EvolutionDashboardProps {
   runId: string
@@ -68,11 +66,17 @@ function OverviewContent({
   hyperparameters,
   lineageEvents,
   bestCandidateId,
+  caseResults,
+  seedCaseResults,
+  caseNames,
 }: {
   state: ReturnType<typeof useEvolutionSocket>
   hyperparameters?: Record<string, unknown> | null
   lineageEvents?: LineageNode[]
   bestCandidateId?: string | null
+  caseResults?: CaseResultData[]
+  seedCaseResults?: CaseResultData[]
+  caseNames?: Map<string, string>
 }) {
   const configuredIslands = (hyperparameters?.n_islands as number) || 4
   return (
@@ -106,6 +110,15 @@ function OverviewContent({
 
       {/* Generation table */}
       <GenerationTable data={state.generations} isLive={state.status === 'running'} />
+
+      {/* Case results (post-run) */}
+      {caseResults && caseResults.length > 0 && (
+        <CaseResultsGrid
+          caseResults={caseResults}
+          seedCaseResults={seedCaseResults}
+          caseNames={caseNames}
+        />
+      )}
     </>
   )
 }
@@ -349,16 +362,14 @@ export default function EvolutionDashboard({ runId }: EvolutionDashboardProps) {
         <HyperparameterDisplay hyperparameters={hyperparameters ?? {}} modelInfo={modelInfo} />
       )}
 
-      {/* Sub-navigation: segmented button group */}
+      {/* Sub-navigation */}
       {isComplete ? (
         <div>
           <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 pb-4">
             <div className="flex items-center gap-1 border-b border-border" role="tablist" aria-label="Evolution results">
               {[
                 { value: 'overview', label: 'Overview' },
-                { value: 'prompt-diffs', label: 'Prompt Diffs' },
-                { value: 'mutation-stats', label: 'Mutation Stats' },
-                { value: 'case-results', label: 'Case Results' },
+                { value: 'winning-path', label: 'Winning Path' },
               ].map((tab) => (
                 <button
                   key={tab.value}
@@ -367,10 +378,10 @@ export default function EvolutionDashboard({ runId }: EvolutionDashboardProps) {
                   aria-controls={`panel-${tab.value}`}
                   onClick={() => setActiveTab(tab.value)}
                   className={cn(
-                    'px-3 py-2 text-xs font-medium transition-colors border-b-2 -mb-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-t-sm',
+                    'px-4 py-2.5 text-sm font-medium transition-colors -mb-px focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-t-md',
                     activeTab === tab.value
-                      ? 'border-primary text-foreground'
-                      : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted-foreground/30'
+                      ? 'border border-border border-b-background bg-card text-foreground'
+                      : 'border border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50'
                   )}
                 >
                   {tab.label}
@@ -381,33 +392,26 @@ export default function EvolutionDashboard({ runId }: EvolutionDashboardProps) {
 
           {activeTab === 'overview' && (
             <div className="mt-6 space-y-6">
-              <OverviewContent state={effectiveState} hyperparameters={hyperparameters as Record<string, unknown> | null} lineageEvents={results?.lineageEvents} bestCandidateId={results?.bestCandidateId} />
+              <OverviewContent
+                state={effectiveState}
+                hyperparameters={hyperparameters as Record<string, unknown> | null}
+                lineageEvents={results?.lineageEvents}
+                bestCandidateId={results?.bestCandidateId}
+                caseResults={results?.caseResults}
+                seedCaseResults={results?.seedCaseResults}
+                caseNames={caseNames}
+              />
             </div>
           )}
-          {activeTab === 'prompt-diffs' && (
+          {activeTab === 'winning-path' && (
             <div className="mt-6">
+              <p className="text-sm text-muted-foreground mb-4">Step-by-step mutations from seed to best candidate</p>
               <DiffViewer
                 lineageEvents={results?.lineageEvents ?? []}
                 bestCandidateId={results?.bestCandidateId ?? null}
               />
             </div>
           )}
-          {activeTab === 'mutation-stats' && (
-            <div className="mt-6">
-              <MutationStats lineageEvents={results?.lineageEvents ?? []} />
-            </div>
-          )}
-          {activeTab === 'case-results' && (
-            <div className="mt-6">
-              <CaseResultsGrid
-                caseResults={results?.caseResults ?? []}
-                seedCaseResults={results?.seedCaseResults ?? []}
-                caseNames={caseNames}
-              />
-            </div>
-          )}
-
-
         </div>
       ) : (
         <div className="space-y-6">
