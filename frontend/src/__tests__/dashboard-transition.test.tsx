@@ -74,12 +74,6 @@ vi.mock('../components/evolution/CaseResultsGrid', () => ({
 vi.mock('../components/evolution/HyperparameterDisplay', () => ({
   default: () => <div data-testid="hyperparameter-display">HyperparameterDisplay</div>,
 }))
-vi.mock('../components/evolution/Islands3D', () => ({
-  default: () => <div data-testid="islands-3d">Islands3D</div>,
-}))
-vi.mock('../components/evolution/Lineage3D', () => ({
-  default: () => <div data-testid="lineage-3d">Lineage3D</div>,
-}))
 
 // SummaryCards mock (no longer rendered directly, CompactSummary is used instead)
 vi.mock('../components/evolution/SummaryCards', () => ({

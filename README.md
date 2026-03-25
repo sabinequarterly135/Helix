@@ -28,7 +28,7 @@ Helix includes a web dashboard for configuration, real-time monitoring during ev
 - Real-time evolution monitoring via WebSocket
 - Interactive playground for prompt testing with chat streaming
 - LLM-powered tool response mocking with format guides
-- 3D visualization (island topology, lineage trees)
+- Interactive lineage graph with click-to-diff
 - Multi-language UI (English, Chinese, Spanish)
 - Docker Compose for single-command deployment
 
@@ -127,7 +127,7 @@ frontend/src/
 
 **Backend**: FastAPI with factory pattern, SQLAlchemy 2.0 async ORM, pydantic-settings config cascade, async evolution engine with island-model parallelism.
 
-**Frontend**: React 19 + Vite + TypeScript + Tailwind CSS v4 + shadcn/ui. Recharts for fitness charts, D3 for phylogenetic trees, React Three Fiber for 3D views (lazy-loaded).
+**Frontend**: React 19 + Vite + TypeScript + Tailwind CSS v4 + shadcn/ui. Recharts for fitness charts, D3 for phylogenetic trees, custom SVG for lineage and island views.
 
 **Communication**: REST for CRUD, WebSocket for live evolution events, SSE for chat playground streaming.
 
