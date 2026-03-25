@@ -54,8 +54,11 @@ export default function FitnessChart({ data, isLive = false }: FitnessChartProps
   const fitnessDomain: [number, number] = [fitnessMin - fitnessPadding, fitnessMax + fitnessPadding]
 
   return (
-    <div className="bg-card border border-border rounded-lg p-4">
-      <h3 className="text-foreground font-semibold mb-4">{t('evolution.fitnessProgression')}</h3>
+    <div className="bg-card border border-border rounded-lg overflow-hidden">
+      <div className="px-4 py-3 border-b border-border">
+        <h3 className="text-sm font-semibold text-foreground">{t('evolution.fitnessProgression')}</h3>
+      </div>
+      <div className="p-4">
       {cleanData.length === 0 ? (
         <div className="flex flex-col items-center justify-center h-[400px] gap-3">
           {isLive ? (
@@ -143,6 +146,7 @@ export default function FitnessChart({ data, isLive = false }: FitnessChartProps
           </LineChart>
         </ResponsiveContainer>
       )}
+      </div>
     </div>
   )
 }
