@@ -103,6 +103,8 @@ class LiteLLMProvider:
             RetryableError: On 429 or 5xx (triggers retry).
             GatewayError: On non-retryable errors (400, 401, etc.).
         """
+        model = self._normalize_model(model)
+
         async with self._semaphore:
             try:
                 response = await self._client.chat.completions.create(
@@ -151,6 +153,17 @@ class LiteLLMProvider:
             timestamp=datetime.now(UTC),
             finish_reason=choice.finish_reason,
         )
+
+    def _normalize_model(self, model: str) -> str:
+        """Normalize model name for the configured provider.
+
+        Strips the ``google/`` prefix when using the Gemini provider directly,
+        since that prefix is an OpenRouter convention and causes 404s on the
+        native Gemini API.
+        """
+        if self._provider == "gemini" and model.startswith("google/"):
+            return model[len("google/"):]
+        return model
 
     def _extract_cost(self, model: str, input_tokens: int, output_tokens: int) -> float:
         """Extract or estimate cost for a completion.

@@ -63,6 +63,7 @@ def _build_mock_provider(chunks):
         return_value=_mock_stream(*chunks)
     )
     mock_provider.close = AsyncMock()
+    mock_provider._normalize_model = lambda model: model
     return mock_provider
 
 
