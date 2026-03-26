@@ -233,7 +233,10 @@ async def chat(
     # Collect tools and mocks from the prompt record
     tools = record.tools if record.tools else None
     mocks = record.mocks if record.mocks else None
-    max_steps = body.max_steps if body.max_steps is not None else DEFAULT_MAX_TOOL_STEPS
+    # Read max_tool_steps from prompt config (Config tab), fall back to default
+    max_steps = DEFAULT_MAX_TOOL_STEPS
+    if config_row and config_row.extra:
+        max_steps = config_row.extra.get("max_tool_steps", DEFAULT_MAX_TOOL_STEPS) or DEFAULT_MAX_TOOL_STEPS
 
     # Load LLM mocker config and format guides from DB
     llm_mocker = None
