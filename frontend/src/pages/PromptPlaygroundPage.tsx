@@ -36,6 +36,42 @@ function renderTemplate(template: string, variables: Record<string, string>): st
 }
 
 function MessageBubble({ message, isStreaming }: { message: ChatMessage; isStreaming: boolean }) {
+  if (message.role === 'tool_call' && message.toolCall) {
+    const args = message.toolCall.arguments
+    const hasArgs = Object.keys(args).length > 0
+    return (
+      <div className="flex justify-start mb-2">
+        <div className="max-w-[80%] rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-mono">
+          <div className="flex items-center gap-1.5 text-amber-400 mb-1">
+            <span className="text-[10px] font-semibold uppercase tracking-wider">Tool Call</span>
+          </div>
+          <div className="text-foreground font-semibold">{message.toolCall.name}()</div>
+          {hasArgs && (
+            <pre className="mt-1 text-muted-foreground text-[11px] overflow-x-auto">
+              {JSON.stringify(args, null, 2)}
+            </pre>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  if (message.role === 'tool_result' && message.toolResult) {
+    return (
+      <div className="flex justify-start mb-2">
+        <div className="max-w-[80%] rounded-md border border-blue-500/30 bg-blue-500/10 px-3 py-2 text-xs font-mono">
+          <div className="flex items-center gap-1.5 text-blue-400 mb-1">
+            <span className="text-[10px] font-semibold uppercase tracking-wider">Tool Result</span>
+            <span className="text-muted-foreground">{message.toolResult.name}</span>
+          </div>
+          <pre className="text-foreground text-[11px] overflow-x-auto whitespace-pre-wrap">
+            {message.toolResult.content}
+          </pre>
+        </div>
+      </div>
+    )
+  }
+
   const isUser = message.role === 'user'
 
   return (

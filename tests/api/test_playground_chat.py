@@ -5,13 +5,14 @@ Covers:
 - POST /api/prompts/nonexistent/chat returns 404
 - POST /api/prompts/{id}/chat with turn limit exceeded returns limit_reached event
 - POST /api/prompts/{id}/chat renders template variables into system message
+- POST /api/prompts/{id}/chat agentic tool loop with mock resolution
 """
 
 from __future__ import annotations
 
 import json
 from types import SimpleNamespace
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
 
@@ -35,33 +36,51 @@ async def _register_prompt(
     )
 
 
-def _make_chunk(content: str | None = None, finish_reason: str | None = None, usage=None):
-    """Build a mock streaming chunk with the structure expected by _sse_generator."""
-    delta = SimpleNamespace(content=content)
-    choice = SimpleNamespace(delta=delta, finish_reason=finish_reason)
-    return SimpleNamespace(
-        choices=[choice] if content is not None or finish_reason is not None else [],
-        usage=usage,
-    )
+def _make_response(
+    content: str | None = "Hello!",
+    tool_calls=None,
+    finish_reason: str = "stop",
+    prompt_tokens: int = 10,
+    completion_tokens: int = 5,
+):
+    """Build a mock non-streaming ChatCompletion response."""
+    message = MagicMock()
+    message.content = content
+    message.tool_calls = tool_calls
+
+    choice = MagicMock()
+    choice.message = message
+    choice.finish_reason = finish_reason
+
+    usage = MagicMock()
+    usage.prompt_tokens = prompt_tokens
+    usage.completion_tokens = completion_tokens
+
+    response = MagicMock()
+    response.choices = [choice]
+    response.usage = usage
+    return response
 
 
-def _make_usage(prompt_tokens: int = 10, completion_tokens: int = 5):
-    """Build a mock usage object."""
-    return SimpleNamespace(prompt_tokens=prompt_tokens, completion_tokens=completion_tokens)
+def _make_tool_call(call_id: str, name: str, arguments: dict):
+    """Build a mock tool call object."""
+    tc = MagicMock()
+    tc.model_dump.return_value = {
+        "id": call_id,
+        "type": "function",
+        "function": {"name": name, "arguments": json.dumps(arguments)},
+    }
+    tc.get = tc.model_dump.return_value.get
+    return tc
 
 
-async def _mock_stream(*chunks):
-    """Create an async iterable that yields the given chunks."""
-    for chunk in chunks:
-        yield chunk
-
-
-def _build_mock_provider(chunks):
-    """Build a mock provider whose _client.chat.completions.create returns chunks."""
+def _build_mock_provider(responses):
+    """Build a mock provider whose _client.chat.completions.create returns responses in sequence."""
     mock_provider = AsyncMock()
-    mock_provider._client.chat.completions.create = AsyncMock(
-        return_value=_mock_stream(*chunks)
-    )
+    if isinstance(responses, list):
+        mock_provider._client.chat.completions.create = AsyncMock(side_effect=responses)
+    else:
+        mock_provider._client.chat.completions.create = AsyncMock(return_value=responses)
     mock_provider.close = AsyncMock()
     mock_provider._normalize_model = lambda model: model
     return mock_provider
@@ -96,13 +115,8 @@ class TestChatStream:
         """POST with mocked provider returns SSE token events followed by done event."""
         await _register_prompt(client)
 
-        chunks = [
-            _make_chunk(content="Hello"),
-            _make_chunk(content=" world"),
-            _make_chunk(content=None, finish_reason="stop"),
-            _make_chunk(usage=_make_usage(10, 5)),
-        ]
-        mock_provider = _build_mock_provider(chunks)
+        mock_response = _make_response(content="Hello world")
+        mock_provider = _build_mock_provider(mock_response)
 
         with patch(
             "api.web.routers.playground.create_provider",
@@ -132,6 +146,7 @@ class TestChatStream:
         assert "output_tokens" in done_event["data"]
         assert "model" in done_event["data"]
         assert "finish_reason" in done_event["data"]
+        assert "steps" in done_event["data"]
 
     async def test_chat_prompt_not_found(self, client: httpx.AsyncClient):
         """POST /api/prompts/nonexistent/chat returns 404."""
@@ -184,19 +199,15 @@ class TestChatStream:
 
         captured_messages = []
 
-        chunks = [
-            _make_chunk(content="Sure!"),
-            _make_chunk(content=None, finish_reason="stop"),
-            _make_chunk(usage=_make_usage(10, 3)),
-        ]
-        mock_provider = _build_mock_provider(chunks)
+        mock_response = _make_response(content="Sure!")
+        mock_provider = _build_mock_provider(mock_response)
 
         # Capture messages passed to the LLM
         original_create = mock_provider._client.chat.completions.create
 
         async def capturing_create(*args, **kwargs):
             captured_messages.extend(kwargs.get("messages", []))
-            return original_create.return_value
+            return mock_response
 
         mock_provider._client.chat.completions.create = AsyncMock(
             side_effect=capturing_create
@@ -222,3 +233,89 @@ class TestChatStream:
         assert system_msg["role"] == "system"
         assert "Alice" in system_msg["content"]
         assert "cooking" in system_msg["content"]
+
+
+class TestAgenticToolLoop:
+    """POST /api/prompts/{prompt_id}/chat with tool calls."""
+
+    async def test_tool_call_emits_events(self, client: httpx.AsyncClient):
+        """When model returns tool_calls and mocks exist, emits tool_call + tool_result events."""
+        # Register prompt with tools and mocks
+        await client.post(
+            "/api/prompts/",
+            json={
+                "id": "tool-prompt",
+                "purpose": "Test tool calling",
+                "template": "You are a helpful assistant.",
+                "tools": [{"type": "function", "function": {"name": "get_weather", "parameters": {}}}],
+                "mocks": [{
+                    "tool_name": "get_weather",
+                    "scenarios": [{"match_args": {}, "response": "Sunny, 22°C"}],
+                }],
+            },
+        )
+
+        tc = _make_tool_call("call_1", "get_weather", {"city": "SF"})
+
+        # Step 1: model returns tool_call, Step 2: model returns text after tool result
+        responses = [
+            _make_response(content=None, tool_calls=[tc], finish_reason="tool_calls"),
+            _make_response(content="The weather in SF is sunny!", finish_reason="stop"),
+        ]
+        mock_provider = _build_mock_provider(responses)
+
+        with patch(
+            "api.web.routers.playground.create_provider",
+            return_value=mock_provider,
+        ):
+            resp = await client.post(
+                "/api/prompts/tool-prompt/chat",
+                json={"messages": [{"role": "user", "content": "What's the weather?"}]},
+            )
+
+        assert resp.status_code == 200
+        events = _parse_sse_events(resp.text)
+        event_names = [e["event"] for e in events]
+
+        assert "tool_call" in event_names
+        assert "tool_result" in event_names
+        assert "token" in event_names
+        assert "done" in event_names
+
+        # Verify tool_call event content
+        tc_event = next(e for e in events if e["event"] == "tool_call")
+        assert tc_event["data"]["name"] == "get_weather"
+
+        # Verify tool_result event content
+        tr_event = next(e for e in events if e["event"] == "tool_result")
+        assert "Sunny" in tr_event["data"]["content"]
+
+        # Verify done has steps count
+        done_event = next(e for e in events if e["event"] == "done")
+        assert done_event["data"]["steps"] == 2
+
+    async def test_no_tools_no_loop(self, client: httpx.AsyncClient):
+        """Without tools/mocks, behaves like normal single-step chat."""
+        await _register_prompt(client, prompt_id="no-tools")
+
+        mock_response = _make_response(content="Just text")
+        mock_provider = _build_mock_provider(mock_response)
+
+        with patch(
+            "api.web.routers.playground.create_provider",
+            return_value=mock_provider,
+        ):
+            resp = await client.post(
+                "/api/prompts/no-tools/chat",
+                json={"messages": [{"role": "user", "content": "hi"}]},
+            )
+
+        events = _parse_sse_events(resp.text)
+        event_names = [e["event"] for e in events]
+        assert "tool_call" not in event_names
+        assert "tool_result" not in event_names
+        assert "token" in event_names
+        assert "done" in event_names
+
+        done = next(e for e in events if e["event"] == "done")
+        assert done["data"]["steps"] == 1

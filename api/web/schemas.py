@@ -578,6 +578,7 @@ class ChatRequest(BaseModel):
     variables: dict = {}  # Template variable values
     turn_limit: int = 20
     cost_budget: float = 0.50  # USD
+    max_steps: int | None = None  # Max agentic tool loop steps per response (default: 10)
 
 
 # --- Format guide schemas (Phase 56) ---

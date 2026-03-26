@@ -1,9 +1,23 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { getApiBaseUrl } from '@/lib/api-config'
 
-export interface ChatMessage {
-  role: 'user' | 'assistant' | 'system'
+export interface ToolCallData {
+  id: string
+  name: string
+  arguments: Record<string, unknown>
+}
+
+export interface ToolResultData {
+  tool_call_id: string
+  name: string
   content: string
+}
+
+export interface ChatMessage {
+  role: 'user' | 'assistant' | 'system' | 'tool_call' | 'tool_result'
+  content: string
+  toolCall?: ToolCallData
+  toolResult?: ToolResultData
 }
 
 export interface ChatUsage {
@@ -180,9 +194,52 @@ export function useChatStream(promptId: string) {
                       ...last,
                       content: last.content + tokenContent,
                     }
+                  } else {
+                    // After tool_call/tool_result, start a new assistant message
+                    msgs.push({ role: 'assistant', content: tokenContent })
                   }
                   return { ...prev, messages: msgs }
                 })
+                break
+              }
+
+              case 'tool_call': {
+                const toolCall: ToolCallData = {
+                  id: parsed.id as string,
+                  name: parsed.name as string,
+                  arguments: parsed.arguments as Record<string, unknown>,
+                }
+                setState((prev) => ({
+                  ...prev,
+                  messages: [
+                    ...prev.messages,
+                    {
+                      role: 'tool_call' as const,
+                      content: toolCall.name,
+                      toolCall,
+                    },
+                  ],
+                }))
+                break
+              }
+
+              case 'tool_result': {
+                const toolResult: ToolResultData = {
+                  tool_call_id: parsed.tool_call_id as string,
+                  name: parsed.name as string,
+                  content: parsed.content as string,
+                }
+                setState((prev) => ({
+                  ...prev,
+                  messages: [
+                    ...prev.messages,
+                    {
+                      role: 'tool_result' as const,
+                      content: toolResult.content,
+                      toolResult,
+                    },
+                  ],
+                }))
                 break
               }
 
