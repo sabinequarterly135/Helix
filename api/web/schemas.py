@@ -192,6 +192,12 @@ class UpdateTemplateRequest(BaseModel):
     template: str
 
 
+class UpdateMocksRequest(BaseModel):
+    """Request body for updating a prompt's mock definitions."""
+
+    mocks: list[dict]
+
+
 class ExtractVariablesRequest(BaseModel):
     """Request body for extracting variables from a template."""
 
@@ -578,6 +584,7 @@ class ChatRequest(BaseModel):
     variables: dict = {}  # Template variable values
     turn_limit: int = 20
     cost_budget: float = 0.50  # USD
+    max_steps: int | None = None  # Max agentic tool loop steps per response (default: 10)
 
 
 # --- Format guide schemas (Phase 56) ---

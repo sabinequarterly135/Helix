@@ -1,9 +1,24 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { getApiBaseUrl } from '@/lib/api-config'
 
-export interface ChatMessage {
-  role: 'user' | 'assistant' | 'system'
+export interface ToolCallData {
+  id: string
+  name: string
+  arguments: Record<string, unknown>
+}
+
+export interface ToolResultData {
+  tool_call_id: string
+  name: string
   content: string
+}
+
+export interface ChatMessage {
+  role: 'user' | 'assistant' | 'system' | 'tool_call' | 'tool_result'
+  content: string
+  toolCall?: ToolCallData
+  toolResult?: ToolResultData
+  step?: number
 }
 
 export interface ChatUsage {
@@ -172,17 +187,62 @@ export function useChatStream(promptId: string) {
             switch (evt.event) {
               case 'token': {
                 const tokenContent = parsed.content as string
+                const tokenStep = parsed.step as number | undefined
                 setState((prev) => {
                   const msgs = [...prev.messages]
                   const last = msgs[msgs.length - 1]
-                  if (last && last.role === 'assistant') {
+                  if (last && last.role === 'assistant' && last.step === tokenStep) {
                     msgs[msgs.length - 1] = {
                       ...last,
                       content: last.content + tokenContent,
                     }
+                  } else {
+                    msgs.push({ role: 'assistant', content: tokenContent, step: tokenStep })
                   }
                   return { ...prev, messages: msgs }
                 })
+                break
+              }
+
+              case 'tool_call': {
+                const toolCall: ToolCallData = {
+                  id: parsed.id as string,
+                  name: parsed.name as string,
+                  arguments: parsed.arguments as Record<string, unknown>,
+                }
+                setState((prev) => ({
+                  ...prev,
+                  messages: [
+                    ...prev.messages,
+                    {
+                      role: 'tool_call' as const,
+                      content: toolCall.name,
+                      toolCall,
+                      step: parsed.step as number | undefined,
+                    },
+                  ],
+                }))
+                break
+              }
+
+              case 'tool_result': {
+                const toolResult: ToolResultData = {
+                  tool_call_id: parsed.tool_call_id as string,
+                  name: parsed.name as string,
+                  content: parsed.content as string,
+                }
+                setState((prev) => ({
+                  ...prev,
+                  messages: [
+                    ...prev.messages,
+                    {
+                      role: 'tool_result' as const,
+                      content: toolResult.content,
+                      toolResult,
+                      step: parsed.step as number | undefined,
+                    },
+                  ],
+                }))
                 break
               }
 
