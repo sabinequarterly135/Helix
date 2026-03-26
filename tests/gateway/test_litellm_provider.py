@@ -66,6 +66,41 @@ class TestProviderInit:
             LiteLLMProvider(provider="unsupported", api_key="k")
 
 
+class TestModelNameNormalization:
+    """Test model name normalization for different providers."""
+
+    def test_gemini_strips_google_prefix(self):
+        provider = LiteLLMProvider(provider="gemini", api_key="k")
+        assert provider._normalize_model("google/gemini-3-flash-preview") == "gemini-3-flash-preview"
+
+    def test_gemini_preserves_plain_name(self):
+        provider = LiteLLMProvider(provider="gemini", api_key="k")
+        assert provider._normalize_model("gemini-2.5-flash") == "gemini-2.5-flash"
+
+    def test_openrouter_keeps_google_prefix(self):
+        provider = LiteLLMProvider(provider="openrouter", api_key="k")
+        assert provider._normalize_model("google/gemini-3-flash-preview") == "google/gemini-3-flash-preview"
+
+    def test_openai_keeps_model_unchanged(self):
+        provider = LiteLLMProvider(provider="openai", api_key="k")
+        assert provider._normalize_model("gpt-4o") == "gpt-4o"
+
+    async def test_gemini_chat_completion_strips_prefix(self):
+        """Model name is normalized before API call."""
+        mock_response = _mock_completion(model="gemini-3-flash-preview")
+        provider = LiteLLMProvider(provider="gemini", api_key="test-key")
+        provider._client.chat.completions.create = AsyncMock(return_value=mock_response)
+
+        await provider.chat_completion(
+            messages=[{"role": "user", "content": "Hi"}],
+            model="google/gemini-3-flash-preview",
+            role=ModelRole.TARGET,
+        )
+
+        call_kwargs = provider._client.chat.completions.create.call_args.kwargs
+        assert call_kwargs["model"] == "gemini-3-flash-preview"
+
+
 class TestChatCompletion:
     """Test basic chat completion functionality."""
 

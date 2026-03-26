@@ -240,7 +240,7 @@ async def _sse_generator(config: GeneConfig, messages: list[dict]):
     """
     provider = create_provider(config.target_provider, config)
 
-    target_model = config.target_model
+    target_model = provider._normalize_model(config.target_model)
     temperature = config.target_temperature or config.generation.temperature
 
     # Build streaming kwargs
