@@ -162,6 +162,7 @@ export default function PromptPlaygroundPage() {
   })
 
   const chat = useChatStream(promptId ?? '')
+  const messageGroups = useMemo(() => groupMessagesByStep(chat.messages), [chat.messages])
 
   // Local state
   const [variables, setVariables] = useState<Record<string, string>>({})
@@ -453,7 +454,7 @@ export default function PromptPlaygroundPage() {
               {t('playground.emptyChat')}
             </div>
           )}
-          {groupMessagesByStep(chat.messages).map((group, i, allGroups) => (
+          {messageGroups.map((group, i, allGroups) => (
             <MessageGroup
               key={i}
               messages={group}

@@ -20,12 +20,12 @@ from jinja2 import Environment
 
 from api.dataset.models import TestCase
 from api.dataset.service import DatasetService
-from api.evaluation.scorers import BehaviorJudgeScorer, _normalize_tool_call
+from api.evaluation.scorers import BehaviorJudgeScorer
 from api.gateway.protocol import LLMProvider
 from api.registry.llm_mocker import LLMMocker
 from api.registry.models import VariableDefinition
 from api.registry.schemas import MockDefinition
-from api.registry.tool_resolver import normalize_tool_call, resolve_tool_call
+from api.registry.tool_resolver import DEFAULT_MAX_TOOL_STEPS, normalize_tool_call, resolve_tool_call
 from api.synthesis.models import (
     ConversationRecord,
     PersonaProfile,
@@ -142,6 +142,7 @@ class SynthesisEngine:
         target_temperature: float | None = None,
         llm_mocker: LLMMocker | None = None,
         format_guides: dict[str, list[str]] | None = None,
+        max_tool_steps: int = DEFAULT_MAX_TOOL_STEPS,
     ) -> None:
         self._meta_provider = meta_provider
         self._target_provider = target_provider
@@ -154,6 +155,7 @@ class SynthesisEngine:
         self._target_temperature = target_temperature
         self._llm_mocker = llm_mocker
         self._format_guides = format_guides or {}
+        self._max_tool_steps = max_tool_steps
 
     async def simulate_conversation(
         self,
@@ -256,7 +258,7 @@ class SynthesisEngine:
             )
 
             # Agentic tool loop: resolve tool calls until stop or max_steps
-            max_tool_steps = 10
+            max_tool_steps = self._max_tool_steps
             tool_step = 0
             current_response = target_response
             scenario_type = self._derive_scenario_type(scenario_context)

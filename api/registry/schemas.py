@@ -72,6 +72,7 @@ class PromptConfigSchema(BaseModel):
     tool_mocker_mode: str | None = None  # "static" or "llm", default None means "static"
     tool_mocker_provider: str | None = None
     tool_mocker_model: str | None = None
+    max_tool_steps: int | None = None
 
     # Legacy generation config (kept for backward compat with existing config.json files)
     generation: GenerationConfig | None = None
