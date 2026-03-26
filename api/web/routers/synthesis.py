@@ -18,6 +18,7 @@ import uuid
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from api.dataset.models import TestCase
+from api.registry.tool_resolver import DEFAULT_MAX_TOOL_STEPS
 from api.synthesis.models import SynthesisConfig
 from api.web.deps import get_config, get_dataset_service, get_registry
 from api.web.schemas import (
@@ -252,6 +253,7 @@ async def _run_synthesis_background(
         # Load tool mocker config and format guides from DB
         format_guides: dict[str, list[str]] = {}
         llm_mocker = None
+        max_tool_steps = DEFAULT_MAX_TOOL_STEPS
 
         if config.database_url:
             from sqlalchemy import select as sa_select
@@ -275,11 +277,13 @@ async def _run_synthesis_background(
                 tool_mocker_mode = "static"
                 tool_mocker_provider_name = None
                 tool_mocker_model_name = None
+                max_tool_steps = DEFAULT_MAX_TOOL_STEPS
 
                 if pc_row and pc_row.extra:
                     tool_mocker_mode = pc_row.extra.get("tool_mocker_mode", "static") or "static"
                     tool_mocker_provider_name = pc_row.extra.get("tool_mocker_provider")
                     tool_mocker_model_name = pc_row.extra.get("tool_mocker_model")
+                    max_tool_steps = pc_row.extra.get("max_tool_steps", DEFAULT_MAX_TOOL_STEPS)
 
                 if tool_mocker_mode == "llm":
                     # Load format guides for this prompt
@@ -333,6 +337,7 @@ async def _run_synthesis_background(
             target_temperature=target_temperature,
             llm_mocker=llm_mocker,
             format_guides=format_guides if format_guides else None,
+            max_tool_steps=max_tool_steps,
         )
 
         # Load existing cases for variable sampling

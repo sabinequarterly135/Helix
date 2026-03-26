@@ -122,6 +122,7 @@ interface ToolMockerFormState {
   mode: string // "static" | "llm"
   provider: string | null
   model: string | null
+  maxToolSteps: number
 }
 
 interface FormState {
@@ -155,6 +156,7 @@ function configToForm(config: PromptConfigResponse): FormState {
       mode: config.tool_mocker.mode || 'static',
       provider: config.tool_mocker.provider || null,
       model: config.tool_mocker.model || null,
+      maxToolSteps: (config.overrides as Record<string, unknown>).max_tool_steps as number ?? 10,
     },
   }
 }
@@ -391,6 +393,7 @@ export default function PromptConfigPage() {
 
     // Tool Mocker fields
     payload['tool_mocker_mode'] = form.tool_mocker.mode
+    payload['max_tool_steps'] = form.tool_mocker.maxToolSteps
     if (form.tool_mocker.mode === 'llm') {
       if (form.tool_mocker.provider) payload['tool_mocker_provider'] = form.tool_mocker.provider
       if (form.tool_mocker.model) payload['tool_mocker_model'] = form.tool_mocker.model
@@ -420,6 +423,7 @@ export default function PromptConfigPage() {
     // Preserve existing tool_mocker state when applying presets
     if (form) {
       payload['tool_mocker_mode'] = form.tool_mocker.mode
+      payload['max_tool_steps'] = form.tool_mocker.maxToolSteps
       if (form.tool_mocker.mode === 'llm') {
         if (form.tool_mocker.provider) payload['tool_mocker_provider'] = form.tool_mocker.provider
         if (form.tool_mocker.model) payload['tool_mocker_model'] = form.tool_mocker.model
@@ -850,6 +854,22 @@ function ToolMockerCard({
             </span>
           </div>
         </div>
+
+        {/* Max tool steps */}
+        {toolNames.length > 0 && (
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-medium text-muted-foreground">{t('config.maxToolSteps')}</span>
+            <Input
+              type="number"
+              min={1}
+              max={50}
+              value={form.maxToolSteps}
+              onChange={(e) => onUpdate('maxToolSteps', Number(e.target.value))}
+              className="w-20 h-8 text-xs"
+              disabled={isPending}
+            />
+          </div>
+        )}
 
         {/* Conditional: LLM mode shows model selector, Static mode shows info text */}
         {isLlmMode ? (

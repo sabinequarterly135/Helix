@@ -158,6 +158,7 @@
     "llm": "LLM",
     "usingYamlMockMatcher": "Using YAML MockMatcher",
     "staticMocks": "Static Mock Scenarios",
+    "maxToolSteps": "Max tool steps",
     "noToolsDefined": "No tools defined. Add tools to use format guides.",
     "advanced": "Advanced",
     "advancedParamsTitle": "Advanced Parameters",
