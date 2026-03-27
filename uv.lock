@@ -400,14 +400,10 @@ wheels = [
 ]
 
 [[package]]
-name = "helix"
+name = "helix-engine"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "aiosqlite" },
-    { name = "asyncpg" },
-    { name = "cryptography" },
-    { name = "fastapi", extra = ["standard"] },
     { name = "httpx" },
     { name = "jinja2" },
     { name = "openai" },
@@ -415,12 +411,21 @@ dependencies = [
     { name = "pydantic-settings" },
     { name = "python-dotenv" },
     { name = "pyyaml" },
-    { name = "sqlalchemy", extra = ["asyncio"] },
     { name = "tenacity" },
+]
+
+[package.optional-dependencies]
+web = [
+    { name = "aiosqlite" },
+    { name = "asyncpg" },
+    { name = "cryptography" },
+    { name = "fastapi", extra = ["standard"] },
+    { name = "sqlalchemy", extra = ["asyncio"] },
 ]
 
 [package.dev-dependencies]
 dev = [
+    { name = "helix-engine", extra = ["web"] },
     { name = "pillow" },
     { name = "pytest" },
     { name = "pytest-asyncio" },
@@ -430,10 +435,10 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "aiosqlite", specifier = ">=0.22.1" },
-    { name = "asyncpg", specifier = ">=0.29.0" },
-    { name = "cryptography", specifier = ">=42.0" },
-    { name = "fastapi", extras = ["standard"], specifier = ">=0.135.0" },
+    { name = "aiosqlite", marker = "extra == 'web'", specifier = ">=0.22.1" },
+    { name = "asyncpg", marker = "extra == 'web'", specifier = ">=0.29.0" },
+    { name = "cryptography", marker = "extra == 'web'", specifier = ">=42.0" },
+    { name = "fastapi", extras = ["standard"], marker = "extra == 'web'", specifier = ">=0.135.0" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "jinja2", specifier = ">=3.1.6" },
     { name = "openai", specifier = ">=2.8.0" },
@@ -441,12 +446,14 @@ requires-dist = [
     { name = "pydantic-settings", specifier = ">=2.13.0" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "pyyaml", specifier = ">=6.0" },
-    { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0.0" },
+    { name = "sqlalchemy", extras = ["asyncio"], marker = "extra == 'web'", specifier = ">=2.0.0" },
     { name = "tenacity", specifier = ">=9.1.0" },
 ]
+provides-extras = ["web"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "helix-engine", extras = ["web"] },
     { name = "pillow", specifier = ">=12.1.1" },
     { name = "pytest", specifier = ">=8.0.0" },
     { name = "pytest-asyncio", specifier = ">=0.24.0" },

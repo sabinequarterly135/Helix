@@ -5,14 +5,8 @@ description = "CLI for Helix evolutionary prompt optimization"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "typer[all]>=0.16.0",
-    "pydantic>=2.11.0",
-    "pydantic-settings>=2.13.0",
-    "jinja2>=3.1.6",
-    "openai>=2.8.0",
-    "tenacity>=9.1.0",
-    "pyyaml>=6.0",
-    "python-dotenv>=1.0.0",
+    "helix-engine>=0.1.0",
+    "typer>=0.16.0",
     "rich>=14.0.0",
 ]
 

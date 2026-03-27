@@ -4,7 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Helix (package: `api`) — an evolutionary prompt optimization engine inspired by the Mind Evolution paper (Google DeepMind, 2025). Uses island-model evolution, RCC (Refinement through Critical Conversation), and Boltzmann selection to iteratively improve LLM prompts against test case datasets.
+Helix (PyPI: `helix-engine`) — an evolutionary prompt optimization engine inspired by the Mind Evolution paper (Google DeepMind, 2025). Uses island-model evolution, RCC (Refinement through Critical Conversation), and Boltzmann selection to iteratively improve LLM prompts against test case datasets.
+
+**Three interfaces share the same core engine:**
+- **Web UI** (`api/web/`) — FastAPI + React dashboard
+- **CLI** (`cli/helix_cli/`) — standalone terminal tool (`pip install helix-cli`)
+- **Python API** — import `api.evolution.runner.run_evolution()` directly
 
 ## Commands
 
@@ -35,6 +40,19 @@ npm run build                    # openapi-ts → tsc → vite build
 npm run generate-client          # Regenerate TS client from OpenAPI spec
 npm run lint                     # ESLint
 npm run test                     # Vitest
+```
+
+### CLI (`cli/`, helix-cli)
+
+```bash
+uv pip install -e cli/               # Install CLI (requires core engine)
+helix init my-prompt                  # Scaffold prompt directory
+helix list                            # List prompts in workspace
+helix show my-prompt                  # Display prompt details
+helix evolve my-prompt                # Run evolution (Rich live progress)
+helix results my-prompt               # Show latest results
+helix accept my-prompt                # Apply evolved template
+# All commands support --json for agent/script integration
 ```
 
 ### Docker
@@ -72,6 +90,18 @@ docker compose -f docker-compose.dev.yml up      # Dev with hot reload
 
 **Routing**: React Router v7. `AppShell` → `PromptLayout` (nested routes per prompt tab).
 
+### CLI (`cli/helix_cli/`)
+
+**Stack**: Typer + Rich. YAML project files (prompt.yaml, dataset.yaml, config.yaml).
+
+**Loader**: `project/loader.py` bridges YAML files to domain models (`PromptRecord`, `TestCase`, `GeneConfig`, `EvolutionConfig`). Reuses `api.registry.service._extract_anchor_variables()` and Jinja2 meta for variable extraction.
+
+**Evolve**: `commands/evolve.py` calls `api.evolution.runner.run_evolution()` directly via `asyncio.run()`. Provides Rich Live progress via `event_callback`.
+
+**Writer**: `project/writer.py` serializes `EvolutionResult` to `results/run-NNN.yaml`.
+
+**Config cascade**: CLI flags > config.yaml > `GENE_*` env vars > defaults.
+
 ### Communication
 
 - REST: CRUD operations, evolution start/cancel, model listing
@@ -93,6 +123,14 @@ docker compose -f docker-compose.dev.yml up      # Dev with hot reload
 - Frontend: path aliases via `@/` (maps to `src/`). shadcn/ui components in `components/ui/`.
 - Tests: `pytest-asyncio` with `asyncio_mode = "auto"`. API tests use `httpx.ASGITransport` with dependency overrides and `FakeGitStorage`.
 - **When modifying or creating features/bug fixes, always review and update related test files.** Ensure tests pass before committing.
+- **Cross-component compatibility**: The core engine (`api/evolution/`, `api/evaluation/`, `api/gateway/`, `api/config/`, `api/dataset/`, `api/registry/models.py`) is shared by three consumers: web API, CLI, and direct Python imports. When changing core models or `run_evolution()` signature, verify compatibility with both `api/web/routers/` (web) and `cli/helix_cli/` (CLI). When changing API endpoints, check if the CLI or frontend uses the affected routes.
+
+## Packages (PyPI)
+
+- `helix-engine` (root `pyproject.toml`) — core engine. Deps: pydantic, jinja2, openai, tenacity. No web/DB deps.
+- `helix-engine[web]` — adds FastAPI, SQLAlchemy, aiosqlite, asyncpg for the web server.
+- `helix-cli` (`cli/pyproject.toml`) — standalone CLI. Depends on `helix-engine` + typer + rich.
+- **Publishing**: Push `engine-v*` or `cli-v*` git tags to trigger PyPI publish via GitHub Actions (`.github/workflows/publish.yml`). Requires trusted publishing configured on PyPI.
 
 ## Environment
 

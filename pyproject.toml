@@ -1,27 +1,33 @@
 [project]
-name = "helix"
+name = "helix-engine"
 version = "0.1.0"
 description = "Evolutionary prompt optimization engine inspired by Mind Evolution"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    # Core engine deps (no web server, no database)
     "httpx>=0.28.1",
-    "sqlalchemy[asyncio]>=2.0.0",
     "pydantic>=2.11.0",
     "pydantic-settings>=2.13.0",
     "jinja2>=3.1.6",
-    "asyncpg>=0.29.0",
     "tenacity>=9.1.0",
     "openai>=2.8.0",
     "pyyaml>=6.0",
     "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+web = [
     "fastapi[standard]>=0.135.0",
-    "cryptography>=42.0",
+    "sqlalchemy[asyncio]>=2.0.0",
     "aiosqlite>=0.22.1",
+    "asyncpg>=0.29.0",
+    "cryptography>=42.0",
 ]
 
 [dependency-groups]
 dev = [
+    "helix-engine[web]",
     "pillow>=12.1.1",
     "pytest>=8.0.0",
     "pytest-asyncio>=0.24.0",
