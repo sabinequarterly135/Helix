@@ -123,7 +123,7 @@ frontend/src/
 
 **后端**：FastAPI 工厂模式 + SQLAlchemy 2.0 异步 ORM + pydantic-settings 配置管理。进化引擎基于岛屿模型实现并行。
 
-**前端**：React 19 + Vite + TypeScript + Tailwind CSS v4 + shadcn/ui。适应度图表用 Recharts，谱系树用 D3，谱系图和岛屿视图用自定义 SVG。
+**前端**：React 19 + Vite + TypeScript + Tailwind CSS v4 + shadcn/ui。适应度图表用 Recharts，谱系图和岛屿视图用自定义 SVG。
 
 **通信**：CRUD 操作走 REST，进化事件实时推送走 WebSocket，Playground 聊天流式输出走 SSE。
 
@@ -217,7 +217,7 @@ frontend/src/
 ## 技术栈
 
 - **后端**：Python 3.13、FastAPI、Pydantic、SQLAlchemy（异步）、Jinja2
-- **前端**：React 19、TypeScript、Vite、Tailwind CSS v4、shadcn/ui、Recharts、D3
+- **前端**：React 19、TypeScript、Vite、Tailwind CSS v4、shadcn/ui、Recharts
 - **LLM 提供商**：Google Gemini、OpenAI、OpenRouter（通过 AsyncOpenAI）
 - **数据库**：SQLite（默认）或 PostgreSQL
 - **部署**：Docker Compose、Vercel（前端）、Railway/Fly.io（后端）

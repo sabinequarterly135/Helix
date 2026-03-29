@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import type { EvolutionState, SummaryData } from '../types/evolution'
+import type { EvolutionState } from '../types/evolution'
 
 // Use vi.hoisted to create mock state that vi.mock factories can reference
 const { mockEvolutionState, mockRunResults, mockInitialState } = vi.hoisted(() => {
@@ -53,14 +53,8 @@ vi.mock('../client/sdk.gen', () => ({
 vi.mock('../components/evolution/FitnessChart', () => ({
   default: () => <div data-testid="fitness-chart">FitnessChart</div>,
 }))
-vi.mock('../components/evolution/IslandsView', () => ({
-  default: () => <div data-testid="islands-view">IslandsView</div>,
-}))
 vi.mock('../components/evolution/GenerationTable', () => ({
   default: () => <div data-testid="generation-table">GenerationTable</div>,
-}))
-vi.mock('../components/evolution/PhyloTree', () => ({
-  default: () => <div data-testid="phylo-tree">PhyloTree</div>,
 }))
 vi.mock('../components/evolution/DiffViewer', () => ({
   default: () => <div data-testid="diff-viewer">DiffViewer</div>,

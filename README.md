@@ -144,7 +144,7 @@ frontend/src/
 
 **Backend**: FastAPI with factory pattern, SQLAlchemy 2.0 async ORM, pydantic-settings config cascade, async evolution engine with island-model parallelism.
 
-**Frontend**: React 19 + Vite + TypeScript + Tailwind CSS v4 + shadcn/ui. Recharts for fitness charts, D3 for phylogenetic trees, custom SVG for lineage and island views.
+**Frontend**: React 19 + Vite + TypeScript + Tailwind CSS v4 + shadcn/ui. Recharts for fitness charts, custom SVG for lineage and island views.
 
 **Communication**: REST for CRUD, WebSocket for live evolution events, SSE for chat playground streaming.
 
@@ -239,7 +239,7 @@ Scores are aggregated with tier multipliers: Critical (5x), Normal (1x), Low (0.
 ## Tech Stack
 
 - **Backend**: Python 3.13, FastAPI, Pydantic, SQLAlchemy (async), Jinja2
-- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS v4, shadcn/ui, Recharts, D3
+- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS v4, shadcn/ui, Recharts
 - **LLM Providers**: Google Gemini, OpenAI, OpenRouter (via AsyncOpenAI)
 - **Database**: SQLite (default) or PostgreSQL
 - **Deployment**: Docker Compose, Vercel (frontend), Railway/Fly.io (backend)

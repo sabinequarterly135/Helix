@@ -26,10 +26,7 @@ export default defineConfig({
           if (id.includes('node_modules/recharts') || id.includes('node_modules/victory-vendor')) {
             return 'vendor-recharts'
           }
-          if (id.includes('node_modules/d3-')) {
-            return 'vendor-d3'
-          }
-          if (id.includes('node_modules/monaco-editor') || id.includes('@monaco-editor')) {
+if (id.includes('node_modules/monaco-editor') || id.includes('@monaco-editor')) {
             return 'vendor-monaco'
           }
           if (id.includes('node_modules/i18next') || id.includes('react-i18next')) {

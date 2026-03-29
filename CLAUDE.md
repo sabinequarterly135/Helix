@@ -86,7 +86,7 @@ docker compose -f docker-compose.dev.yml up      # Dev with hot reload
 
 **Key hooks**: `useEvolutionSocket` (WebSocket reducer for live evolution), `useChatStream` (SSE for playground chat).
 
-**Visualization**: Recharts (fitness), D3 (phylogenetic trees), custom SVG (lineage graph, island summary).
+**Visualization**: Recharts (fitness), custom SVG (lineage graph, island summary).
 
 **Routing**: React Router v7. `AppShell` → `PromptLayout` (nested routes per prompt tab).
 

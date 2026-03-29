@@ -66,7 +66,7 @@ src/
   client/           # Auto-generated API client (from OpenAPI schema)
   components/
     datasets/       # Case list, case editor, JSON file import
-    evolution/      # Dashboard, FitnessChart, IslandsView, PhyloTree,
+    evolution/      # Dashboard, FitnessChart, LineageGraph,
                     # DiffViewer, MutationStats, SummaryCards, CaseResults
     history/        # Run history views
     layout/         # App shell, navigation
@@ -91,7 +91,7 @@ src/
 
 - React 19, TypeScript 5.9, Vite 8
 - Tailwind CSS 4 with shadcn/ui components
-- Recharts (fitness charts), D3 (phylogenetic tree, island visualization)
+- Recharts (fitness charts), custom SVG (lineage graph, island summary)
 - Monaco Editor (prompt template editing)
 - TanStack Query (data fetching)
 - React Router v7
