@@ -7,8 +7,9 @@ from pathlib import Path
 from uuid import uuid4
 
 import yaml
-from dotenv import load_dotenv
 from jinja2 import Environment, meta
+
+from helix_cli.config_home import load_helix_env
 
 from api.config.models import GeneConfig, GenerationConfig
 from api.dataset.models import PriorityTier, TestCase
@@ -115,7 +116,9 @@ def load_config(
     Returns (GeneConfig, EvolutionConfig, run_kwargs) where run_kwargs
     contains model/provider overrides and thinking_config for run_evolution().
     """
-    load_dotenv()
+    # Load env from global config home, then workspace-local .env (overrides global)
+    workspace = prompt_dir.parent
+    load_helix_env(workspace)
 
     config_file = prompt_dir / "config.yaml"
     yaml_data: dict = {}

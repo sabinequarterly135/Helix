@@ -33,25 +33,30 @@ def models_command(
         return
 
     if provider not in PROVIDERS:
-        console.print(f"[red]Unknown provider '{provider}'. Choose from: {', '.join(PROVIDERS)}[/red]")
+        console.print(
+            f"[red]Unknown provider '{provider}'. Choose from: {', '.join(PROVIDERS)}[/red]"
+        )
         raise typer.Exit(1)
 
-    from dotenv import load_dotenv
+    from helix_cli.config_home import load_helix_env
 
-    load_dotenv()
+    load_helix_env()
 
     try:
         model_list = asyncio.run(_fetch_models(provider))
     except Exception as e:
         console.print(f"[red]Failed to fetch models: {e}[/red]")
-        console.print("[dim]Make sure your API key is set. Run [bold]helix setup[/bold] first.[/dim]")
+        console.print(
+            "[dim]Make sure your API key is set. Run [bold]helix setup[/bold] first.[/dim]"
+        )
         raise typer.Exit(1) from None
 
     if json_output:
-        typer.echo(json.dumps([
-            {"id": m.id, "name": getattr(m, "name", m.id)}
-            for m in model_list
-        ], indent=2))
+        typer.echo(
+            json.dumps(
+                [{"id": m.id, "name": getattr(m, "name", m.id)} for m in model_list], indent=2
+            )
+        )
         return
 
     if not model_list:
