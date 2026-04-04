@@ -122,7 +122,7 @@ async function testConnection(provider: string, apiKey: string): Promise<TestCon
 }
 
 async function fetchModels(provider: string): Promise<ModelInfo[]> {
-  const res = await fetch(`${base}/api/models?provider=${encodeURIComponent(provider)}`)
+  const res = await fetch(`${base}/api/models/?provider=${encodeURIComponent(provider)}`)
   if (res.status === 503) return [] // No API key configured
   if (!res.ok) throw new Error(`Failed to load models: ${res.status}`)
   return res.json()

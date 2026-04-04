@@ -46,7 +46,7 @@ export default function PresetSelector({
   const { data: customPresets = [] } = useQuery({
     queryKey: ['presets', 'evolution'],
     queryFn: async () => {
-      const res = await fetch(`${apiBase}/api/presets?type=evolution`)
+      const res = await fetch(`${apiBase}/api/presets/?type=evolution`)
       return res.json() as Promise<PresetResponse[]>
     },
   })
