@@ -63,13 +63,15 @@ cd helix
 cp .env.example .env
 ```
 
-Edit `.env` and set your API key:
+Edit `.env` and set your API key (at least one provider required):
 
 ```
-GENE_GEMINI_API_KEY=your-key-here
+GENE_OPENROUTER_API_KEY=your-key-here
+# or GENE_GEMINI_API_KEY=your-key-here
+# or GENE_OPENAI_API_KEY=your-key-here
 ```
 
-See [Environment Variables Reference](docs/SETUP.md#environment-variables-reference) for all available options.
+Helix runs in **developer mode** by default — single-user, no login required. See [Configuration Guide](docs/CONFIGURATION.md) for all options including multi-user mode, rate limiting, and model setup.
 
 ### 3. Start the backend
 
@@ -231,7 +233,7 @@ Scores are aggregated with tier multipliers: Critical (5x), Normal (1x), Low (0.
 
 - [CLI Guide](cli/README.md) -- standalone CLI installation, commands, and YAML file format
 - [Setup Guide](docs/SETUP.md) -- detailed installation, Docker, and deployment instructions
-- [Configuration](docs/CONFIGURATION.md) -- environment variables, model roles, and Settings UI
+- [Configuration](docs/CONFIGURATION.md) -- developer vs multi-user mode, environment variables, model roles, auth, and Settings UI
 - [Import & Export Formats](docs/IMPORT_EXPORT.md) -- JSON/YAML schemas for test cases and personas
 - [Contributing](CONTRIBUTING.md) -- how to contribute to Helix
 - [Architecture](CLAUDE.md) -- detailed codebase documentation and conventions
